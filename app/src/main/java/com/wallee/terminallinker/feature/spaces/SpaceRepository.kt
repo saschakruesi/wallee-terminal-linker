@@ -1,0 +1,188 @@
+package com.wallee.terminallinker.feature.spaces
+
+import com.wallee.terminallinker.core.api.IatUnit
+import com.wallee.terminallinker.core.api.WalleeApiException
+import com.wallee.terminallinker.core.api.WalleeClient
+import com.wallee.terminallinker.core.api.dto.ListResponse
+import com.wallee.terminallinker.core.api.dto.Space
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.serialization.Serializable
+
+/** What the UI needs from a space; persisted as JSON in DataStore, so it must stay small and stable. */
+@Serializable
+data class SpaceRef(
+    val id: Long,
+    val name: String,
+    val active: Boolean = true,
+    val accountName: String? = null,
+    val manual: Boolean = false,
+)
+
+/** AUTO: `GET /spaces` lists the spaces; MANUAL: the user entered space IDs by hand (docs/02 §3.1). */
+enum class SpaceMode { AUTO, MANUAL }
+
+/** Storage abstraction so the repository is unit-testable without DataStore. */
+interface SpaceStorage {
+    val activeSpaceId: Flow<Long?>
+    val recentSpaceIds: Flow<List<Long>>
+    val discoveredSpaces: Flow<List<SpaceRef>>
+    val manualSpaces: Flow<List<SpaceRef>>
+    val spaceMode: Flow<SpaceMode>
+
+    suspend fun setActiveSpaceId(id: Long?)
+
+    suspend fun setDiscoveredSpaces(spaces: List<SpaceRef>)
+
+    suspend fun setManualSpaces(spaces: List<SpaceRef>)
+
+    suspend fun setSpaceMode(mode: SpaceMode)
+}
+
+sealed class DiscoveryResult {
+    /** `GET /spaces` returned at least one space; the list is stored and the mode is AUTO. */
+    data class Found(val spaces: List<SpaceRef>) : DiscoveryResult()
+
+    /** Empty list or 403: the app switches to MANUAL mode (docs/02 §3.1, step 2). */
+    data class None(val forbidden: Boolean) : DiscoveryResult()
+}
+
+/**
+ * Unifies automatically discovered and manually added spaces into one list (docs/02 §3.1) and owns the
+ * `iat` unit fallback: a 401 on the first discovery is retried once with milliseconds.
+ */
+class SpaceRepository(
+    private val client: WalleeClient,
+    private val storage: SpaceStorage,
+    private val onIatUnitChanged: suspend (IatUnit) -> Unit = {},
+) {
+    /** Discovered ∪ manual, sorted by name, without duplicates. */
+    val spaces: Flow<List<SpaceRef>> = combine(storage.discoveredSpaces, storage.manualSpaces) { auto, manual ->
+        (auto + manual).distinctBy { it.id }.sortedBy { it.name.lowercase() }
+    }
+
+    val activeSpace: Flow<SpaceRef?> = combine(spaces, storage.activeSpaceId) { list, id ->
+        list.firstOrNull {
+            it.id ==
+                id
+        }
+    }
+
+    val recentSpaces: Flow<List<SpaceRef>> = combine(spaces, storage.recentSpaceIds) { list, ids ->
+        ids.mapNotNull { id -> list.firstOrNull { it.id == id } }
+    }
+
+    val manualSpaces: Flow<List<SpaceRef>> = storage.manualSpaces
+    val mode: Flow<SpaceMode> = storage.spaceMode
+
+    /** Connection test: lists all spaces of the application user, paging with `after` until `hasMore` is false. */
+    suspend fun discover(): DiscoveryResult {
+        val spaces = try {
+            fetchAllSpaces()
+        } catch (e: WalleeApiException) {
+            when {
+                e.isUnauthorized && client.iatUnit == IatUnit.SECONDS -> retryWithMillis()
+                e.isForbidden -> return switchToManual(forbidden = true)
+                else -> throw e
+            }
+        }
+        if (spaces.isEmpty()) return switchToManual(forbidden = false)
+        val refs = spaces.map { it.toRef() }
+        storage.setDiscoveredSpaces(refs)
+        storage.setSpaceMode(SpaceMode.AUTO)
+        return DiscoveryResult.Found(refs)
+    }
+
+    private suspend fun retryWithMillis(): List<Space> {
+        client.iatUnit = IatUnit.MILLIS
+        return try {
+            fetchAllSpaces().also { onIatUnitChanged(IatUnit.MILLIS) }
+        } catch (e: WalleeApiException) {
+            client.iatUnit = IatUnit.SECONDS
+            throw e
+        }
+    }
+
+    private suspend fun fetchAllSpaces(): List<Space> {
+        val all = mutableListOf<Space>()
+        var after: Long? = null
+        repeat(MAX_PAGES) {
+            val query = buildList {
+                add("limit" to PAGE_SIZE.toString())
+                after?.let { add("after" to it.toString()) }
+            }
+            val page: ListResponse<Space> = client.get("/spaces", query = query, expand = listOf("account"))
+            all += page.data
+            if (!page.hasMore || page.data.isEmpty()) return all
+            after = page.data.last().id
+        }
+        return all
+    }
+
+    private suspend fun switchToManual(forbidden: Boolean): DiscoveryResult.None {
+        storage.setDiscoveredSpaces(emptyList())
+        storage.setSpaceMode(SpaceMode.MANUAL)
+        return DiscoveryResult.None(forbidden)
+    }
+
+    /** `GET /spaces/{id}` — verifies a manually entered ID and returns its name. */
+    suspend fun verify(id: Long): SpaceRef {
+        val space: Space = client.get("/spaces/$id", expand = listOf("account"))
+        return space.toRef().copy(manual = true)
+    }
+
+    suspend fun addManual(space: SpaceRef) {
+        val current = storage.manualSpaces.first()
+        storage.setManualSpaces(
+            (
+                current.filter {
+                    it.id != space.id
+                } + space.copy(manual = true)
+                ).sortedBy { it.name.lowercase() },
+        )
+    }
+
+    suspend fun removeManual(id: Long) {
+        storage.setManualSpaces(storage.manualSpaces.first().filter { it.id != id })
+        if (storage.activeSpaceId.first() == id) storage.setActiveSpaceId(null)
+    }
+
+    suspend fun setActive(id: Long) {
+        storage.setActiveSpaceId(id)
+    }
+
+    /**
+     * Picks the space to show after a successful setup: the preferred one (from a QR code), else the
+     * previously active one, else the first active space in the list.
+     */
+    suspend fun chooseActive(preferredId: Long? = null): SpaceRef? {
+        val list = spaces.first()
+        val previous = storage.activeSpaceId.first()
+        val chosen = list.firstOrNull { it.id == preferredId && it.active }
+            ?: list.firstOrNull { it.id == previous && it.active }
+            ?: list.firstOrNull { it.active }
+            ?: return null
+        storage.setActiveSpaceId(chosen.id)
+        return chosen
+    }
+
+    suspend fun clear() {
+        storage.setDiscoveredSpaces(emptyList())
+        storage.setManualSpaces(emptyList())
+        storage.setActiveSpaceId(null)
+        storage.setSpaceMode(SpaceMode.AUTO)
+    }
+
+    private fun Space.toRef(): SpaceRef = SpaceRef(
+        id = id,
+        name = name?.takeIf { it.isNotBlank() } ?: id.toString(),
+        active = isActive,
+        accountName = account?.name,
+    )
+
+    private companion object {
+        const val PAGE_SIZE = 100
+        const val MAX_PAGES = 20
+    }
+}
