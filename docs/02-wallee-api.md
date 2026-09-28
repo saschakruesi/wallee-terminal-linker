@@ -53,8 +53,9 @@ suspend fun <T> request(method: String, path: String, query: Map<String, String>
   als Array definiert), signiert, sendet mit `Accept: application/json`, `Content-Type: application/json`
   (nur bei Body), `space: <id>` wenn gesetzt.
 - `204 No Content` → `Unit`.
-- Fehler: Status ≠ 2xx → `WalleeApiException(status, code?, message, fieldErrors?)`; Body-Schema
-  `RestApiErrorResponse` (`type`, `message`, `errorCode`, `details`). Mapping für die UI:
+- Fehler: Status ≠ 2xx → `WalleeApiException(status, code?, message, errors, errorId?)`; Body-Schema
+  `RestApiErrorResponse` laut Spec: `code` (maschinenlesbar), `message` (Klartext), `errors` (Map Feld → Meldung),
+  `id`, `date`. Mapping für die UI:
 
 | Status | Anzeige |
 |---|---|
@@ -76,13 +77,14 @@ suspend fun <T> request(method: String, path: String, query: Map<String, String>
 
 | Zweck | Call |
 |---|---|
-| Alle Spaces, auf die der Application User Zugriff hat | `GET /spaces?limit=100` → `{ data: Space[], hasMore }` — **ohne** `space`-Header |
+| Alle Spaces, auf die der Application User Zugriff hat | `GET /spaces?limit=100[&after=<letzte id>]` → `{ data: Space[], hasMore, limit }` — **ohne** `space`-Header; Cursor-Pagination (`after`/`before`), kein `offset` |
 | Einzelnen Space prüfen (Fallback / Verbindungstest) | `GET /spaces/{id}` → `Space` |
 
 `Space`-Felder für die UI: `id`, `name`, `state` (`ACTIVE`, `INACTIVE`, `DELETING`, `DELETED`),
 `account.name` (mit `expand=account`, optional für Gruppierung), `primaryCurrency`.
 
-**Zu verifizieren in Phase 2 (offener Punkt):** Ob `GET /spaces` für einen Application User tatsächlich alle
+**Zu verifizieren in Phase 2 (offener Punkt, Stand 28.09.2026: Client und Fallback implementiert, Verhalten
+noch nicht mit echten Credentials geprüft):** Ob `GET /spaces` für einen Application User tatsächlich alle
 Spaces liefert, in denen er eine Rolle hat, oder ob die Antwort leer/403 ist. Die Spec verlangt keinen
 `account`-Header. Verhalten der App:
 
@@ -222,13 +224,13 @@ wallee-app-user://v1?u=<applicationUserId>&k=<authenticationKey>[&s=<spaceId>[,<
 Beispiel:
 
 ```
-wallee-app-user://v1?u=12345&k=Q2xhdWRlVGVzdEtleQ%3D%3D&s=67890,67891&n=Hotel%20Muster
+wallee-app-user://v1?u=12345&k=AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA%3D&s=67890,67891&n=Hotel%20Muster
 ```
 
 Zusätzlich akzeptiert der Parser dieselben Felder als **JSON-Objekt** (falls das Portal das bevorzugt):
 
 ```json
-{ "type": "wallee-app-user", "v": 1, "userId": 12345, "key": "Q2xhdWRlVGVzdEtleQ==",
+{ "type": "wallee-app-user", "v": 1, "userId": 12345, "key": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=",
   "spaceIds": [67890, 67891], "label": "Hotel Muster" }
 ```
 
@@ -244,8 +246,9 @@ Regeln:
   `Failure(NotAWalleeCode)` (der Terminal-S/N-Scanner und der Credential-Scanner sind getrennte Modi; ein
   Credential-QR im S/N-Modus wird als ungültige S/N abgewiesen und umgekehrt).
 - `v` ≠ 1 → `Failure(UnsupportedVersion)` mit Hinweis «App aktualisieren».
-- `u` muss Ganzzahl > 0 sein; `k` muss nach URL-Dekodierung gültiges Base64 sein (Länge ≥ 16 Bytes) — sonst
-  `Failure(Malformed)`.
+- `u` muss Ganzzahl > 0 sein; `k` muss nach URL-Dekodierung gültiges Base64 sein (Länge ≥ 16 Bytes; das
+  Beispiel oben ist ein 32-Byte-Testschlüssel) — sonst `Failure(Malformed)`. Beim Dekodieren von `k` wird `+`
+  **nicht** als Leerzeichen interpretiert (nur Prozent-Escapes), damit auch nicht-kodierte Keys funktionieren.
 - Der Key wird **nie** geloggt, nie im Klartext angezeigt und sofort nach dem Speichern in
   `EncryptedSharedPreferences` aus dem Speicher verworfen. Der Rohtext des Scans wird nicht in Prefs oder
   Navigation-Args gehalten (Übergabe über den ViewModel-Scope, nicht über die Route).
