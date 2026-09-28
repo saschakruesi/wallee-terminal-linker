@@ -1,0 +1,26 @@
+# Android / Gradle
+*.iml
+.gradle/
+build/
+/local.properties
+/captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+!docs/**/*.apk
+
+# Signing — never commit
+*.jks
+*.keystore
+keystore.properties
+/app/release/
+
+# IDE
+.idea/
+*.swp
+.DS_Store
+
+# Test credentials
+.env
+.env.local
