@@ -51,6 +51,7 @@ fun SpaceSheet(viewModel: SpacesViewModel, onDismiss: () -> Unit, onOpenSettings
     val spaces by viewModel.spaces.collectAsStateWithLifecycle()
     val recent by viewModel.recent.collectAsStateWithLifecycle()
     val active by viewModel.active.collectAsStateWithLifecycle()
+    val truncated by viewModel.truncated.collectAsStateWithLifecycle()
     var query by rememberSaveable { mutableStateOf("") }
     val filtered = if (query.isBlank()) {
         spaces

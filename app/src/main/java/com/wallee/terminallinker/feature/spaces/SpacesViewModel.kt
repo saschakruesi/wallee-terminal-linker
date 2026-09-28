@@ -48,6 +48,8 @@ class SpacesViewModel(private val container: AppContainer) : ViewModel() {
         SharingStarted.WhileSubscribed(5_000),
         SpaceMode.AUTO,
     )
+    val truncated: StateFlow<Boolean> =
+        repo.discoveryTruncated.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     private val _addSpace = MutableStateFlow(AddSpaceState())
     val addSpace: StateFlow<AddSpaceState> = _addSpace

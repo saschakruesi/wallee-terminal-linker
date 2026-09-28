@@ -23,6 +23,7 @@ private class FakeStorage : SpaceStorage {
     override val discoveredSpaces = MutableStateFlow<List<SpaceRef>>(emptyList())
     override val manualSpaces = MutableStateFlow<List<SpaceRef>>(emptyList())
     override val spaceMode = MutableStateFlow(SpaceMode.AUTO)
+    override val discoveryTruncated = MutableStateFlow(false)
 
     override suspend fun setActiveSpaceId(id: Long?) {
         activeSpaceId.value = id
@@ -39,6 +40,10 @@ private class FakeStorage : SpaceStorage {
 
     override suspend fun setSpaceMode(mode: SpaceMode) {
         spaceMode.value = mode
+    }
+
+    override suspend fun setDiscoveryTruncated(truncated: Boolean) {
+        discoveryTruncated.value = truncated
     }
 }
 
@@ -74,8 +79,10 @@ class SpaceRepositoryTest {
         server.enqueue(page(space(20, "Zoo"), space(10, "Bar"), space(30, "Alpha", "INACTIVE"), hasMore = true))
         val result = repo.discover()
         assertTrue(result is DiscoveryResult.Found)
-        assertEquals("/api/v2.0/spaces?limit=100", server.takeRequest().path)
+        assertEquals("/api/v2.0/spaces?limit=10", server.takeRequest().path)
         assertEquals(1, server.requestCount)
+        assertTrue((result as DiscoveryResult.Found).hasMore)
+        assertTrue(storage.discoveryTruncated.value)
         assertEquals(listOf("Alpha", "Bar", "Zoo"), repo.spaces.first().map { it.name })
         assertEquals(SpaceMode.AUTO, storage.spaceMode.value)
         assertEquals(listOf(false, true, true), repo.spaces.first().map { it.active })

@@ -31,7 +31,12 @@ interface SpaceStorage {
     val manualSpaces: Flow<List<SpaceRef>>
     val spaceMode: Flow<SpaceMode>
 
+    /** True when `GET /spaces` reported more spaces than the app loads (docs/02 §3.1). */
+    val discoveryTruncated: Flow<Boolean>
+
     suspend fun setActiveSpaceId(id: Long?)
+
+    suspend fun setDiscoveryTruncated(truncated: Boolean)
 
     suspend fun setDiscoveredSpaces(spaces: List<SpaceRef>)
 
@@ -42,7 +47,7 @@ interface SpaceStorage {
 
 sealed class DiscoveryResult {
     /** `GET /spaces` returned at least one space; the list is stored and the mode is AUTO. */
-    data class Found(val spaces: List<SpaceRef>) : DiscoveryResult()
+    data class Found(val spaces: List<SpaceRef>, val hasMore: Boolean) : DiscoveryResult()
 
     /** Empty list or 403: the app switches to MANUAL mode (docs/02 §3.1, step 2). */
     data class None(val forbidden: Boolean) : DiscoveryResult()
@@ -75,14 +80,16 @@ class SpaceRepository(
 
     val manualSpaces: Flow<List<SpaceRef>> = storage.manualSpaces
     val mode: Flow<SpaceMode> = storage.spaceMode
+    val discoveryTruncated: Flow<Boolean> = storage.discoveryTruncated
 
     /**
-     * Connection test: one `GET /spaces?limit=100` without expand — a single round trip so the test stays
-     * fast even on slow networks. Users with more than [MAX_SPACES] spaces add the rest by ID.
+     * Connection test: one `GET /spaces?limit=10` without expand. Listing is slow on the wallee side for
+     * users with access to many spaces, so the app loads only the first [MAX_SPACES] and lets the user
+     * add further spaces by ID (docs/02 §3.1).
      */
     suspend fun discover(): DiscoveryResult {
-        val spaces = try {
-            fetchAllSpaces()
+        val page = try {
+            fetchFirstPage()
         } catch (e: WalleeApiException) {
             when {
                 e.isUnauthorized && client.iatUnit == IatUnit.SECONDS -> retryWithMillis()
@@ -90,30 +97,30 @@ class SpaceRepository(
                 else -> throw e
             }
         }
-        if (spaces.isEmpty()) return switchToManual(forbidden = false)
-        val refs = spaces.map { it.toRef() }
+        if (page.data.isEmpty()) return switchToManual(forbidden = false)
+        val refs = page.data.map { it.toRef() }
         storage.setDiscoveredSpaces(refs)
+        storage.setDiscoveryTruncated(page.hasMore)
         storage.setSpaceMode(SpaceMode.AUTO)
-        return DiscoveryResult.Found(refs)
+        return DiscoveryResult.Found(refs, page.hasMore)
     }
 
-    private suspend fun retryWithMillis(): List<Space> {
+    private suspend fun retryWithMillis(): ListResponse<Space> {
         client.iatUnit = IatUnit.MILLIS
         return try {
-            fetchAllSpaces().also { onIatUnitChanged(IatUnit.MILLIS) }
+            fetchFirstPage().also { onIatUnitChanged(IatUnit.MILLIS) }
         } catch (e: WalleeApiException) {
             client.iatUnit = IatUnit.SECONDS
             throw e
         }
     }
 
-    private suspend fun fetchAllSpaces(): List<Space> {
-        val page: ListResponse<Space> = client.get("/spaces", query = listOf("limit" to MAX_SPACES.toString()))
-        return page.data
-    }
+    private suspend fun fetchFirstPage(): ListResponse<Space> =
+        client.get("/spaces", query = listOf("limit" to MAX_SPACES.toString()))
 
     private suspend fun switchToManual(forbidden: Boolean): DiscoveryResult.None {
         storage.setDiscoveredSpaces(emptyList())
+        storage.setDiscoveryTruncated(false)
         storage.setSpaceMode(SpaceMode.MANUAL)
         return DiscoveryResult.None(forbidden)
     }
@@ -161,6 +168,7 @@ class SpaceRepository(
 
     suspend fun clear() {
         storage.setDiscoveredSpaces(emptyList())
+        storage.setDiscoveryTruncated(false)
         storage.setManualSpaces(emptyList())
         storage.setActiveSpaceId(null)
         storage.setSpaceMode(SpaceMode.AUTO)
@@ -174,6 +182,6 @@ class SpaceRepository(
     )
 
     companion object {
-        const val MAX_SPACES = 100
+        const val MAX_SPACES = 10
     }
 }

@@ -35,6 +35,7 @@ class UiPrefs(context: Context) : SpaceStorage {
     override val spaceMode: Flow<SpaceMode> = store.data.map { prefs ->
         prefs[SPACE_MODE]?.let { runCatching { SpaceMode.valueOf(it) }.getOrNull() } ?: SpaceMode.AUTO
     }
+    override val discoveryTruncated: Flow<Boolean> = store.data.map { it[DISCOVERY_TRUNCATED] ?: false }
     val iatUnit: Flow<IatUnit> = store.data.map { prefs ->
         prefs[IAT_UNIT]?.let { runCatching { IatUnit.valueOf(it) }.getOrNull() } ?: IatUnit.SECONDS
     }
@@ -69,6 +70,10 @@ class UiPrefs(context: Context) : SpaceStorage {
         store.edit { it[SPACE_MODE] = mode.name }
     }
 
+    override suspend fun setDiscoveryTruncated(truncated: Boolean) {
+        store.edit { it[DISCOVERY_TRUNCATED] = truncated }
+    }
+
     suspend fun setIatUnit(unit: IatUnit) {
         store.edit { it[IAT_UNIT] = unit.name }
     }
@@ -94,6 +99,7 @@ class UiPrefs(context: Context) : SpaceStorage {
         val DISCOVERED_SPACES = stringPreferencesKey("discoveredSpaces")
         val MANUAL_SPACES = stringPreferencesKey("manualSpaces")
         val SPACE_MODE = stringPreferencesKey("spaceMode")
+        val DISCOVERY_TRUNCATED = booleanPreferencesKey("discoveryTruncated")
         val IAT_UNIT = stringPreferencesKey("iatUnit")
         val SHOW_DECOMMISSIONED = booleanPreferencesKey("showDecommissioned")
     }

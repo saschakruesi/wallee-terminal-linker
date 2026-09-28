@@ -77,7 +77,7 @@ suspend fun <T> request(method: String, path: String, query: Map<String, String>
 
 | Zweck | Call |
 |---|---|
-| Alle Spaces, auf die der Application User Zugriff hat | `GET /spaces?limit=100` → `{ data: Space[], hasMore, limit }` — **ohne** `space`-Header, **ohne** `expand`, ein einziger Request (max. 100 Spaces; weitere per ID). Die API paginiert per Cursor (`after`/`before`), kein `offset` |
+| Alle Spaces, auf die der Application User Zugriff hat | `GET /spaces?limit=10` → `{ data: Space[], hasMore, limit }` — **ohne** `space`-Header, **ohne** `expand`, ein einziger Request mit `limit=10` (die Liste ist serverseitig langsam für Nutzer mit vielen Spaces; weitere Spaces per ID, `hasMore` wird als Hinweis angezeigt). Die API paginiert per Cursor (`after`/`before`), kein `offset` |
 | Einzelnen Space prüfen (Fallback / Verbindungstest) | `GET /spaces/{id}` → `Space` |
 
 `Space`-Felder für die UI: `id`, `name`, `state` (`ACTIVE`, `INACTIVE`, `DELETING`, `DELETED`),

@@ -210,6 +210,8 @@
     <string name="qr_parse">Check content</string>
     <string name="qr_phase_note">The camera scanner follows in phase 4. Until then the code content can be pasted in debug builds.</string>
 
+    <string name="space_list_truncated">Only the first %1$d spaces are loaded — add further spaces by ID.</string>
+    <string name="setup_spaces_found_more">(more available)</string>
     <string name="space_add_title">Add space ID</string>
     <string name="space_add_hint">The space ID is shown in the wallee backend under Space → Settings.</string>
     <string name="space_mode_auto">automatic</string>

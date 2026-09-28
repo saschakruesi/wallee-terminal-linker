@@ -1,7 +1,9 @@
 package com.wallee.terminallinker.feature.setup
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wallee.terminallinker.BuildConfig
 import com.wallee.terminallinker.core.api.toUserMessage
 import com.wallee.terminallinker.core.auth.Credentials
 import com.wallee.terminallinker.core.auth.ScannedCredentials
@@ -25,6 +27,7 @@ data class SetupUiState(
     val testing: Boolean = false,
     val error: String? = null,
     val foundCount: Int? = null,
+    val foundMore: Boolean = false,
     /** Shown when discovery returned no spaces (docs/03 Setup, "Keine Spaces gefunden"). */
     val manualPanel: Boolean = false,
     val manualForbidden: Boolean = false,
@@ -106,10 +109,18 @@ class SetupViewModel(private val container: AppContainer) : ViewModel() {
         testAndSave()
     }
 
+    private fun debug(message: String) {
+        if (BuildConfig.DEBUG) Log.d("wallee-setup", message)
+    }
+
     fun testAndSave() {
         val current = _state.value
         val userId = current.userId.toLongOrNull()
+        debug(
+            "testAndSave: userIdLength=${current.userId.length} keyLength=${current.key.length} keyStored=${current.keyStored} remember=${current.remember}",
+        )
         if (userId == null || userId <= 0) {
+            debug("testAndSave: invalid user id")
             _state.update {
                 it.copy(
                     error = container.appContext.getString(com.wallee.terminallinker.R.string.setup_validation_user_id),
@@ -132,10 +143,13 @@ class SetupViewModel(private val container: AppContainer) : ViewModel() {
         val credentials = Credentials(userId, key)
         _state.update { it.copy(testing = true, error = null, foundCount = null, manualPanel = false) }
         viewModelScope.launch {
-            container.credentialStore.save(credentials, persist = current.remember)
             try {
+                debug("testAndSave: saving credentials")
+                container.credentialStore.save(credentials, persist = current.remember)
+                debug("testAndSave: discovering spaces")
                 when (val result = container.spaceRepository.discover()) {
                     is DiscoveryResult.Found -> {
+                        debug("testAndSave: found ${result.spaces.size} spaces")
                         storedCredentials = credentials
                         _state.update {
                             it.copy(testing = false, foundCount = result.spaces.size, key = "", keyStored = true)
@@ -146,6 +160,7 @@ class SetupViewModel(private val container: AppContainer) : ViewModel() {
                     }
 
                     is DiscoveryResult.None -> {
+                        debug("testAndSave: no spaces (forbidden=${result.forbidden})")
                         storedCredentials = credentials
                         _state.update {
                             it.copy(
@@ -167,6 +182,7 @@ class SetupViewModel(private val container: AppContainer) : ViewModel() {
                     }
                 }
             } catch (e: Exception) {
+                debug("testAndSave: failed with ${e.javaClass.simpleName}: ${e.message?.take(120)}")
                 // Do not keep credentials that failed the test: restore the previous set (or none).
                 if (previous !=
                     null
