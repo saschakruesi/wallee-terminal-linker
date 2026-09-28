@@ -17,8 +17,8 @@ camerax = "1.6.2"
 # Kotlin libraries
 kotlinxSerialization = "1.11.0"
 kotlinxCoroutines = "1.11.0"
-# Network / scanning (declared now, wired in phases 2 and 4)
-okhttp = "5.5.0"
+# Network / scanning — OkHttp 5.5+ requires compileSdk 37
+okhttp = "5.4.0"
 mlkitBarcode = "17.3.0"
 # Test
 junitJupiter = "5.14.4"
@@ -50,7 +50,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
-okhttp-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver3", version.ref = "okhttp" }
+okhttp-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okhttp" }
 mlkit-barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlkitBarcode" }
 junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junitJupiter" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
