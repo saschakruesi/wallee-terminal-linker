@@ -21,14 +21,14 @@ import com.wallee.terminallinker.feature.terminals.TerminalsScreen
 private const val TRANSITION_MS = 200
 
 /**
- * All routes from docs/03 wired with fade transitions ≤ 200 ms. Phase 1 starts at Setup because there
- * is no credential store yet; phase 2 chooses Setup or Terminals from the stored state.
+ * All routes from docs/03 wired with fade transitions ≤ 200 ms. [startDestination] is Terminals when
+ * credentials are stored, otherwise Setup (decided in MainActivity).
  */
 @Composable
-fun AppNavGraph(navController: NavHostController = rememberNavController()) {
+fun AppNavGraph(startDestination: Any, navController: NavHostController = rememberNavController()) {
     NavHost(
         navController = navController,
-        startDestination = SetupRoute,
+        startDestination = startDestination,
         enterTransition = { fadeIn(tween(TRANSITION_MS)) },
         exitTransition = { fadeOut(tween(TRANSITION_MS)) },
         popEnterTransition = { fadeIn(tween(TRANSITION_MS)) },
@@ -38,7 +38,7 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
             SetupScreen(
                 onContinue = {
                     navController.navigate(TerminalsRoute) {
-                        popUpTo<SetupRoute> { inclusive = true }
+                        popUpTo(navController.graph.id) { inclusive = true }
                     }
                 },
                 onScanCredentials = { navController.navigate(ScanRoute(mode = ScanMode.CREDENTIALS)) },
@@ -48,6 +48,7 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
             TerminalsScreen(
                 onOpenTerminal = { id -> navController.navigate(TerminalDetailRoute(id)) },
                 onOpenSettings = { navController.navigate(SettingsRoute) },
+                onScanSpaces = { navController.navigate(ScanRoute(mode = ScanMode.CREDENTIALS, spacesOnly = true)) },
             )
         }
         composable<TerminalDetailRoute> { entry ->
@@ -79,6 +80,7 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
                     }
                 },
                 onCredentialsScanned = { navController.popBackStack() },
+                spacesOnly = route.spacesOnly,
             )
         }
         composable<ResultRoute> { entry ->
@@ -100,6 +102,8 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
         composable<SettingsRoute> {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
+                onEditCredentials = { navController.navigate(SetupRoute) },
+                onScanSpaces = { navController.navigate(ScanRoute(mode = ScanMode.CREDENTIALS, spacesOnly = true)) },
                 onOpenStyleguide = if (BuildConfig.DEBUG) {
                     { navController.navigate(StyleguideRoute) }
                 } else {

@@ -41,7 +41,7 @@
     <string name="setup_help_link">Anleitung</string>
     <string name="setup_test_and_save">Verbindung testen &amp; speichern</string>
     <string name="setup_remember">Zugangsdaten auf diesem Gerät merken</string>
-    <string name="setup_placeholder_note">Phase 1: Formular und Verbindungstest folgen in Phase 2.</string>
+    <string name="setup_placeholder_note">Der QR-Code wird im wallee-Portal beim Application User erzeugt.</string>
 
     <!-- Space -->
     <string name="space_choose">Space wählen</string>
@@ -170,4 +170,76 @@
     <string name="scan_confirm_link">Linken</string>
     <string name="scan_confirm_replace">Ersetzen</string>
     <string name="scan_rescan">Erneut scannen</string>
+
+    <!-- Fehlertexte (docs/02 §2) -->
+    <string name="error_401">Zugangsdaten ungültig — User-ID und Authentication Key prüfen. Bleibt der Fehler, die Uhrzeit des Telefons prüfen (automatische Zeit aktivieren).</string>
+    <string name="error_403">Der Application User hat in diesem Space keine Berechtigung für Terminals.</string>
+    <string name="error_404">Terminal nicht (mehr) gefunden.</string>
+    <string name="error_409">Das Terminal wurde inzwischen verändert.</string>
+    <string name="error_429">Zu viele Anfragen — bitte kurz warten.</string>
+    <string name="error_network">Keine Verbindung zu app-wallee.com.</string>
+    <string name="error_generic">Fehler von wallee (HTTP %1$d).</string>
+    <string name="error_no_credentials">Keine Zugangsdaten hinterlegt.</string>
+    <string name="error_unknown">Unbekannter Fehler.</string>
+
+    <!-- Setup (Phase 2) -->
+    <string name="setup_validation_user_id">Application User ID eingeben (nur Ziffern).</string>
+    <string name="setup_validation_key">Authentication Key eingeben.</string>
+    <string name="setup_key_masked">••••••••</string>
+    <string name="setup_key_change">ändern</string>
+    <string name="setup_key_stored_hint">Gespeicherter Key wird verwendet.</string>
+    <string name="setup_credentials_from_qr">Zugangsdaten per QR-Code übernehmen</string>
+    <plurals name="setup_spaces_found">
+        <item quantity="one">%1$d Space gefunden</item>
+        <item quantity="other">%1$d Spaces gefunden</item>
+    </plurals>
+    <string name="setup_no_spaces_title">Keine Spaces gefunden</string>
+    <string name="setup_no_spaces_text">wallee hat für diesen Application User keine Spaces geliefert. Space-ID aus dem wallee-Backend eingeben, um fortzufahren.</string>
+    <string name="setup_no_spaces_forbidden">Der Application User darf die Space-Liste nicht abrufen. Space-ID aus dem wallee-Backend eingeben, um fortzufahren.</string>
+    <string name="setup_manual_space_id">Space-ID manuell eingeben</string>
+    <string name="setup_check">Prüfen</string>
+    <string name="setup_add">Hinzufügen</string>
+    <string name="setup_replace_title">Bestehende Zugangsdaten ersetzen?</string>
+    <string name="setup_replace_text">Auf diesem Gerät sind bereits Zugangsdaten gespeichert. Sollen sie durch die gescannten (User-ID %1$s) ersetzt werden?</string>
+    <string name="setup_replace_confirm">Ersetzen</string>
+    <string name="setup_verified_space">%1$s (%2$d)</string>
+
+    <!-- Credential-QR (docs/02 §5) -->
+    <string name="qr_error_not_wallee">Kein wallee-Zugangsdaten-Code.</string>
+    <string name="qr_error_version">Dieser Code braucht eine neuere Version der App.</string>
+    <string name="qr_error_malformed">Der Code ist unvollständig oder beschädigt.</string>
+    <string name="qr_not_wallee_title">Kein wallee-Zugangsdaten-Code</string>
+    <string name="qr_rescan">Erneut scannen</string>
+    <string name="qr_detected_title">Zugangsdaten erkannt</string>
+    <string name="qr_detected_spaces_title">Space-IDs erkannt</string>
+    <string name="qr_user_id">User-ID</string>
+    <string name="qr_key">Key</string>
+    <string name="qr_spaces">Spaces</string>
+    <string name="qr_label">Bezeichnung</string>
+    <string name="qr_apply">Übernehmen &amp; Verbindung testen</string>
+    <string name="qr_apply_spaces">Space-IDs übernehmen</string>
+    <string name="qr_no_spaces_in_code">Der Code enthält keine Space-IDs.</string>
+    <string name="qr_paste_label">QR-Inhalt (Debug)</string>
+    <string name="qr_paste_hint">wallee-app-user://v1?u=…&amp;k=…</string>
+    <string name="qr_parse">Inhalt prüfen</string>
+    <string name="qr_phase_note">Der Kamera-Scanner folgt in Phase 4. Bis dahin kann der Code-Inhalt im Debug-Build eingefügt werden.</string>
+
+    <!-- Spaces (Phase 2) -->
+    <string name="space_add_title">Space-ID hinzufügen</string>
+    <string name="space_add_hint">Die Space-ID steht im wallee-Backend unter Space → Einstellungen.</string>
+    <string name="space_mode_auto">automatisch</string>
+    <string name="space_mode_manual">manuell</string>
+    <string name="space_remove">Entfernen</string>
+    <string name="space_none_active">Kein Space gewählt</string>
+    <string name="space_choose_first">Space wählen, um Terminals zu sehen.</string>
+    <string name="cd_scan_qr">QR-Code scannen</string>
+
+    <!-- Einstellungen (Phase 2) -->
+    <string name="settings_credentials_value">User-ID %1$s · Key ••••••••</string>
+    <string name="settings_credentials_memory_only">Nur bis zum Beenden der App gespeichert</string>
+    <string name="settings_change">ändern</string>
+    <string name="settings_spaces_mode">Modus: %1$s</string>
+    <string name="settings_manual_spaces">Manuell erfasste Spaces</string>
+    <string name="settings_no_manual_spaces">Keine manuell erfassten Spaces.</string>
+    <string name="settings_add_space">Space-ID hinzufügen</string>
 </resources>

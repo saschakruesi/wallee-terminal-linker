@@ -37,7 +37,7 @@
     <string name="setup_help_link">Guide</string>
     <string name="setup_test_and_save">Test connection &amp; save</string>
     <string name="setup_remember">Remember credentials on this device</string>
-    <string name="setup_placeholder_note">Phase 1: form and connection test follow in phase 2.</string>
+    <string name="setup_placeholder_note">The QR code is generated in the wallee portal for the application user.</string>
 
     <string name="space_choose">Choose space</string>
     <string name="space_search">Search space…</string>
@@ -158,4 +158,71 @@
     <string name="scan_confirm_link">Link</string>
     <string name="scan_confirm_replace">Replace</string>
     <string name="scan_rescan">Scan again</string>
+
+    <string name="error_401">Invalid credentials — check user ID and authentication key. If the error persists, check the phone\'s clock (enable automatic time).</string>
+    <string name="error_403">The application user has no permission for terminals in this space.</string>
+    <string name="error_404">Terminal not found (any more).</string>
+    <string name="error_409">The terminal was modified in the meantime.</string>
+    <string name="error_429">Too many requests — please wait a moment.</string>
+    <string name="error_network">No connection to app-wallee.com.</string>
+    <string name="error_generic">Error from wallee (HTTP %1$d).</string>
+    <string name="error_no_credentials">No credentials stored.</string>
+    <string name="error_unknown">Unknown error.</string>
+
+    <string name="setup_validation_user_id">Enter the application user ID (digits only).</string>
+    <string name="setup_validation_key">Enter the authentication key.</string>
+    <string name="setup_key_masked">••••••••</string>
+    <string name="setup_key_change">change</string>
+    <string name="setup_key_stored_hint">The stored key is used.</string>
+    <string name="setup_credentials_from_qr">Import credentials from a QR code</string>
+    <plurals name="setup_spaces_found">
+        <item quantity="one">%1$d space found</item>
+        <item quantity="other">%1$d spaces found</item>
+    </plurals>
+    <string name="setup_no_spaces_title">No spaces found</string>
+    <string name="setup_no_spaces_text">wallee returned no spaces for this application user. Enter a space ID from the wallee backend to continue.</string>
+    <string name="setup_no_spaces_forbidden">The application user may not list spaces. Enter a space ID from the wallee backend to continue.</string>
+    <string name="setup_manual_space_id">Enter space ID manually</string>
+    <string name="setup_check">Check</string>
+    <string name="setup_add">Add</string>
+    <string name="setup_replace_title">Replace existing credentials?</string>
+    <string name="setup_replace_text">Credentials are already stored on this device. Replace them with the scanned ones (user ID %1$s)?</string>
+    <string name="setup_replace_confirm">Replace</string>
+    <string name="setup_verified_space">%1$s (%2$d)</string>
+
+    <string name="qr_error_not_wallee">Not a wallee credentials code.</string>
+    <string name="qr_error_version">This code needs a newer version of the app.</string>
+    <string name="qr_error_malformed">The code is incomplete or damaged.</string>
+    <string name="qr_not_wallee_title">Not a wallee credentials code</string>
+    <string name="qr_rescan">Scan again</string>
+    <string name="qr_detected_title">Credentials detected</string>
+    <string name="qr_detected_spaces_title">Space IDs detected</string>
+    <string name="qr_user_id">User ID</string>
+    <string name="qr_key">Key</string>
+    <string name="qr_spaces">Spaces</string>
+    <string name="qr_label">Label</string>
+    <string name="qr_apply">Apply &amp; test connection</string>
+    <string name="qr_apply_spaces">Apply space IDs</string>
+    <string name="qr_no_spaces_in_code">The code contains no space IDs.</string>
+    <string name="qr_paste_label">QR content (debug)</string>
+    <string name="qr_paste_hint">wallee-app-user://v1?u=…&amp;k=…</string>
+    <string name="qr_parse">Check content</string>
+    <string name="qr_phase_note">The camera scanner follows in phase 4. Until then the code content can be pasted in debug builds.</string>
+
+    <string name="space_add_title">Add space ID</string>
+    <string name="space_add_hint">The space ID is shown in the wallee backend under Space → Settings.</string>
+    <string name="space_mode_auto">automatic</string>
+    <string name="space_mode_manual">manual</string>
+    <string name="space_remove">Remove</string>
+    <string name="space_none_active">No space selected</string>
+    <string name="space_choose_first">Choose a space to see its terminals.</string>
+    <string name="cd_scan_qr">Scan QR code</string>
+
+    <string name="settings_credentials_value">User ID %1$s · key ••••••••</string>
+    <string name="settings_credentials_memory_only">Kept only until the app is closed</string>
+    <string name="settings_change">change</string>
+    <string name="settings_spaces_mode">Mode: %1$s</string>
+    <string name="settings_manual_spaces">Manually added spaces</string>
+    <string name="settings_no_manual_spaces">No manually added spaces.</string>
+    <string name="settings_add_space">Add space ID</string>
 </resources>

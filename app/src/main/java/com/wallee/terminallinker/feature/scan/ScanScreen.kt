@@ -52,6 +52,7 @@ fun ScanScreen(
     onClose: () -> Unit,
     onLinked: (terminalId: Long, serial: String, previousSerial: String?) -> Unit,
     onCredentialsScanned: () -> Unit,
+    spacesOnly: Boolean = false,
 ) {
     val terminal = terminalId?.let(SampleTerminals::byId)
     var manualOpen by rememberSaveable { mutableStateOf(false) }
@@ -113,13 +114,15 @@ fun ScanScreen(
                     textAlign = TextAlign.Center,
                 )
             }
-            Spacer(Modifier.height(WalleeSpacing.S2))
-            Text(
-                text = stringResource(R.string.scan_placeholder_note),
-                style = WalleeTextStyles.footnote,
-                color = WalleeColors.White.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center,
-            )
+            if (!credentials) {
+                Spacer(Modifier.height(WalleeSpacing.S2))
+                Text(
+                    text = stringResource(R.string.scan_placeholder_note),
+                    style = WalleeTextStyles.footnote,
+                    color = WalleeColors.White.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center,
+                )
+            }
             Spacer(Modifier.weight(1f))
             if (!credentials) {
                 WSecondaryButton(
@@ -135,11 +138,7 @@ fun ScanScreen(
                     onDark = true,
                 )
             } else {
-                WTextButton(
-                    text = stringResource(R.string.scan_simulate_hit),
-                    onClick = onCredentialsScanned,
-                    onDark = true,
-                )
+                CredentialScanControls(spacesOnly = spacesOnly, onApplied = onCredentialsScanned)
             }
             Spacer(Modifier.height(WalleeSpacing.S3))
         }

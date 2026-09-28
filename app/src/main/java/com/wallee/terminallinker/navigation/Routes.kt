@@ -15,7 +15,7 @@ data class TerminalDetailRoute(val terminalId: Long)
 enum class ScanMode { LINK, REPLACE, CREDENTIALS }
 
 @Serializable
-data class ScanRoute(val mode: ScanMode, val terminalId: Long? = null)
+data class ScanRoute(val mode: ScanMode, val terminalId: Long? = null, val spacesOnly: Boolean = false)
 
 enum class ResultOutcome { LINKED, REPLACED, UNLINKED }
 

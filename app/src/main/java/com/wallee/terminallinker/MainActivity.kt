@@ -9,6 +9,8 @@ import androidx.compose.ui.graphics.toArgb
 import com.wallee.terminallinker.core.ui.WalleeColors
 import com.wallee.terminallinker.core.ui.WalleeTheme
 import com.wallee.terminallinker.navigation.AppNavGraph
+import com.wallee.terminallinker.navigation.SetupRoute
+import com.wallee.terminallinker.navigation.TerminalsRoute
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,9 +23,11 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.light(WalleeColors.Bg.toArgb(), WalleeColors.Bg.toArgb()),
         )
         super.onCreate(savedInstanceState)
+        val container = (application as TerminalLinkerApp).container
+        val start: Any = if (container.credentialStore.load() != null) TerminalsRoute else SetupRoute
         setContent {
             WalleeTheme {
-                AppNavGraph()
+                AppNavGraph(startDestination = start)
             }
         }
     }

@@ -2,6 +2,7 @@ package com.wallee.terminallinker.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,7 @@ fun WDialog(
     onDismissRequest: () -> Unit,
     confirmButton: @Composable () -> Unit,
     dismissButton: (@Composable () -> Unit)? = null,
+    content: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
@@ -42,6 +44,10 @@ fun WDialog(
                 Text(text = title, style = WalleeTextStyles.sectionTitle)
                 Spacer(Modifier.height(12.dp))
                 Text(text = text, style = WalleeTextStyles.body)
+                if (content != null) {
+                    Spacer(Modifier.height(WalleeSpacing.S2))
+                    content()
+                }
                 Spacer(Modifier.height(WalleeSpacing.S3))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
