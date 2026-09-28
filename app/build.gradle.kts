@@ -1,0 +1,127 @@
+import java.util.Base64
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ktlint)
+}
+
+// Release signing comes from the environment only (docs/01 §Build & Release). Without it the release
+// build is debug-signed so local `assembleRelease` still works; the build log says so.
+val keystoreBase64: String? = System.getenv("TL_KEYSTORE_BASE64")?.takeIf { it.isNotBlank() }
+val releaseKeystore: File? = keystoreBase64?.let { encoded ->
+    layout.buildDirectory.file("signing/release.jks").get().asFile.apply {
+        parentFile.mkdirs()
+        writeBytes(Base64.getDecoder().decode(encoded))
+    }
+}
+if (releaseKeystore == null) {
+    logger.warn("TL_KEYSTORE_BASE64 not set: release build will be unsigned/debug-signed (local test only).")
+}
+
+android {
+    namespace = "com.wallee.terminallinker"
+    compileSdk = 36
+
+    defaultConfig {
+        applicationId = "com.wallee.terminallinker"
+        minSdk = 26
+        targetSdk = 35
+        versionCode = (System.getenv("TL_VERSION_CODE")?.toIntOrNull()) ?: 1
+        versionName = System.getenv("TL_VERSION_NAME")?.removePrefix("v")?.takeIf { it.isNotBlank() } ?: "0.1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    androidResources {
+        localeFilters += listOf("de", "en")
+    }
+
+    signingConfigs {
+        if (releaseKeystore != null) {
+            create("release") {
+                storeFile = releaseKeystore
+                storePassword = System.getenv("TL_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("TL_KEY_ALIAS")
+                keyPassword = System.getenv("TL_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            versionNameSuffix = "-debug"
+        }
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig =
+                if (releaseKeystore != null) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
+    testOptions {
+        unitTests.all { it.useJUnitPlatform() }
+    }
+
+    packaging {
+        resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+ktlint {
+    version.set(libs.versions.ktlint.get())
+    android.set(true)
+    filter {
+        exclude { it.file.path.contains("/build/") }
+    }
+}
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.android)
+
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+}

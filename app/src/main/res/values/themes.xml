@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Platform theme for the window only; everything visible is drawn by Compose (WalleeTheme). Always light. -->
+    <style name="Theme.TerminalLinker" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/wallee_bg</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:colorControlNormal">#FF000000</item>
+        <item name="android:colorAccent">@color/wallee_turquoise</item>
+    </style>
+</resources>

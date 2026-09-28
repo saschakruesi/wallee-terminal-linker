@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Only colours needed outside Compose (launcher, window). Design tokens live in WalleeColors.kt. -->
+    <color name="ic_launcher_background">#FFFFFFFF</color>
+    <color name="wallee_bg">#FFFFFFFF</color>
+    <color name="wallee_turquoise">#FF11D9CC</color>
+</resources>
