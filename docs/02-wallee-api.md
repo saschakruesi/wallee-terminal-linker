@@ -83,10 +83,11 @@ suspend fun <T> request(method: String, path: String, query: Map<String, String>
 `Space`-Felder für die UI: `id`, `name`, `state` (`ACTIVE`, `INACTIVE`, `DELETING`, `DELETED`),
 `account.name` (mit `expand=account`, optional für Gruppierung), `primaryCurrency`.
 
-**Zu verifizieren in Phase 2 (offener Punkt, Stand 28.09.2026: Client und Fallback implementiert, Verhalten
-noch nicht mit echten Credentials geprüft):** Ob `GET /spaces` für einen Application User tatsächlich alle
-Spaces liefert, in denen er eine Rolle hat, oder ob die Antwort leer/403 ist. Die Spec verlangt keinen
-`account`-Header. Verhalten der App:
+**Geklärt (28.09.2026, Test-Space):** `GET /spaces` liefert für einen Application User die Spaces mit Rolle
+(HTTP 200, `hasMore = true` bei mehr als `limit`). Die Antwort ist aber **langsam**: mit `limit=100` und
+`expand=account` lief die Anfrage in den 20-s-Lese-Timeout, mit `limit=10` ohne `expand` antwortete der Server
+in ≈ 5,7 s. Deshalb lädt die App nur die ersten 10 Spaces und bietet den Rest per ID an. Die Spec verlangt
+keinen `account`-Header. Verhalten der App:
 
 1. Verbindungstest ruft `GET /spaces` auf. Liefert er ≥ 1 Space → Dropdown wird daraus gefüllt.
 2. Liefert er 0 Spaces oder 403 → die App wechselt in den **manuellen Modus**: Der Nutzer erfasst

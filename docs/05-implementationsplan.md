@@ -141,7 +141,7 @@ Durchlauf T1–T14 ohne Befund.
 
 ## Offene Punkte für wallee (intern klären)
 
-- Verhalten von `GET /spaces` für Application Users (Phase 2).
+- ~~Verhalten von `GET /spaces` für Application Users (Phase 2).~~ Geklärt: liefert die Spaces, ist aber langsam (≈ 6 s für 10 Spaces, Timeout bei 100) — siehe `docs/02 §3.1`.
 - Exakte Fehlercodes/-texte von `POST /payment/terminals/{id}/link` bei unbekannter oder bereits
   verwendeter Seriennummer (Phase 4).
 - Ob nach `link` zusätzlich ein Aktivierungsschritt am Gerät nötig ist (Aktivierungscode, `activation-status`)
