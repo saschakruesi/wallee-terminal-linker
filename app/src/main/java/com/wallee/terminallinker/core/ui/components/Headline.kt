@@ -1,9 +1,11 @@
 package com.wallee.terminallinker.core.ui.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -30,9 +32,7 @@ fun Headline(
         if (line2Trailing == null) {
             Text(text = line2, style = WalleeTextStyles.headline2, maxLines = 2, overflow = TextOverflow.Ellipsis)
         } else {
-            androidx.compose.foundation.layout.Row(
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = line2,
                     style = WalleeTextStyles.headline2,

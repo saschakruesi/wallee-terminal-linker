@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -18,12 +19,14 @@ import com.wallee.terminallinker.core.ui.WalleeSpacing
 
 /**
  * Flat `#11D9CC` surface with 40 dp inner padding and black content. The white wordmark (36 dp) is shown
- * only when the panel dominates the screen (setup, result).
+ * only when the panel dominates the screen (setup, result). [behindStatusBar] paints the turquoise under
+ * the status bar and pads the content below it.
  */
 @Composable
 fun TurquoisePanel(
     modifier: Modifier = Modifier,
     showLogo: Boolean = false,
+    behindStatusBar: Boolean = false,
     contentPadding: Dp = WalleeSpacing.S5,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -31,6 +34,7 @@ fun TurquoisePanel(
         modifier = modifier
             .fillMaxWidth()
             .background(WalleeColors.Turquoise)
+            .then(if (behindStatusBar) Modifier.statusBarsPadding() else Modifier)
             .padding(contentPadding),
     ) {
         if (showLogo) {

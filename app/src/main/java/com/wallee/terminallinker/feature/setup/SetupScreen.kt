@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -46,7 +45,7 @@ fun SetupScreen(onContinue: () -> Unit, onScanCredentials: () -> Unit) {
     var authKey by rememberSaveable { mutableStateOf("") }
     WScreen(applyStatusBarInset = false) {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            TurquoisePanel(showLogo = true, modifier = Modifier.statusBarsPadding()) {
+            TurquoisePanel(showLogo = true, behindStatusBar = true) {
                 Text(
                     text = stringResource(R.string.brand_claim),
                     style = WalleeTextStyles.statement.copy(fontWeight = FontWeight.Light),
