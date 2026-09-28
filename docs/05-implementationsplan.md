@@ -3,7 +3,7 @@
 Sechs Phasen, jede mit «Definition of Done». Reihenfolge einhalten; nach Phase 4 ist die App im Feld
 einsetzbar (Link/Replace/Unlink), Phase 5 bringt die Komfortfunktionen, Phase 6 den Release.
 
-**Aktuelle Phase: 0 — Projekt noch nicht begonnen.** Diese Zeile bei jedem Phasenabschluss aktualisieren.
+**Aktuelle Phase: 1 — Gerüst, Theme, Komponenten.** Implementiert auf Branch `phase-1-scaffold` (`./gradlew ktlintCheck test assembleDebug` grün, CI-Workflow vorhanden); die manuelle Abnahme gemäss DoD (APK auf Gerät, Styleguide-Review gegen `docs/04`, TalkBack) steht noch aus. Danach Phase 2. Diese Zeile bei jedem Phasenabschluss aktualisieren.
 
 Voraussetzungen: Android Studio (aktuell), JDK 17, ein wallee **Test-Space** mit Application User (Rolle mit
 Payment-Terminal-Rechten in ≥ 2 Spaces), mindestens ein Payment Terminal im Zustand `ACTIVE` ohne Gerät und
