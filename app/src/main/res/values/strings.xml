@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Deutsch (Schweiz): «ss», nie «ß». Alle UI-Texte hier, nichts hartkodiert. -->
+    <string name="app_name">Terminal Linker</string>
+    <string name="brand_claim">#homeofpayment</string>
+    <string name="cd_wallee_logo">wallee</string>
+
+    <!-- Allgemein -->
+    <string name="action_cancel">Abbrechen</string>
+    <string name="action_continue">Weiter</string>
+    <string name="action_back">Zurück</string>
+    <string name="action_close">Schliessen</string>
+    <string name="action_retry">Erneut versuchen</string>
+    <string name="action_save">Speichern</string>
+    <string name="action_ok">OK</string>
+    <string name="value_none">—</string>
+    <string name="cd_chevron">Öffnen</string>
+    <string name="cd_show_password">Passwort anzeigen</string>
+    <string name="cd_hide_password">Passwort verbergen</string>
+    <string name="cd_clear_search">Suche leeren</string>
+    <string name="cd_loading">Wird geladen</string>
+    <string name="cd_selected">Ausgewählt</string>
+
+    <!-- Badges -->
+    <string name="badge_linked">Gelinkt</string>
+    <string name="badge_unlinked">Ungelinkt</string>
+    <string name="badge_inactive">Inaktiv</string>
+    <string name="badge_preparing">Vorbereitung</string>
+    <string name="badge_decommissioned">Stillgelegt</string>
+    <string name="badge_error">Fehler</string>
+
+    <!-- Setup -->
+    <string name="setup_title_1">Einrichtung</string>
+    <string name="setup_title_2">wallee verbinden</string>
+    <string name="setup_section_credentials">Zugangsdaten</string>
+    <string name="setup_qr_button">QR scannen</string>
+    <string name="setup_qr_hint">Der QR-Code wird im wallee-Portal beim Application User erzeugt.</string>
+    <string name="setup_user_id">Application User ID</string>
+    <string name="setup_auth_key">Authentication Key</string>
+    <string name="setup_help">Application User im wallee-Backend unter Account → Users → Application Users anlegen. Er braucht in jedem Space eine Rolle mit Rechten auf Payment Terminals.</string>
+    <string name="setup_help_link">Anleitung</string>
+    <string name="setup_test_and_save">Verbindung testen &amp; speichern</string>
+    <string name="setup_remember">Zugangsdaten auf diesem Gerät merken</string>
+    <string name="setup_placeholder_note">Phase 1: Formular und Verbindungstest folgen in Phase 2.</string>
+
+    <!-- Space -->
+    <string name="space_choose">Space wählen</string>
+    <string name="space_search">Space suchen…</string>
+    <string name="space_recent">Zuletzt verwendet</string>
+    <string name="space_all">Alle Spaces (A–Z)</string>
+    <string name="space_inactive">inaktiv</string>
+    <string name="space_add_manual">Space-ID manuell hinzufügen</string>
+    <string name="space_settings">Einstellungen</string>
+    <string name="space_placeholder_name">Hotel Muster – Rezeption</string>
+    <string name="cd_space_chip">Space wechseln</string>
+
+    <!-- Terminals -->
+    <string name="terminals_title_1">Terminals</string>
+    <string name="terminals_search_hint">Name, Terminal-ID oder Seriennummer</string>
+    <string name="terminals_filter_all">Alle</string>
+    <string name="terminals_filter_unlinked">Ungelinkt</string>
+    <string name="terminals_filter_linked">Gelinkt</string>
+    <string name="terminals_sort_label">Sortierung: %1$s</string>
+    <string name="terminals_sort_unlinked_first">Ungelinkt zuerst</string>
+    <string name="terminals_status_line">%1$d Terminals · aktualisiert %2$s</string>
+    <string name="terminals_empty">In diesem Space sind keine Terminals angelegt. Terminals werden im wallee-Backend unter Terminals → Payment Terminals erstellt.</string>
+    <string name="terminals_no_match">Kein Terminal passt zu ‹%1$s›</string>
+    <string name="terminals_clear_search">Suche leeren</string>
+    <string name="terminals_placeholder_note">Phase 1: Beispieldaten. Die Liste wird in Phase 3 aus wallee geladen.</string>
+
+    <!-- Terminal-Detail -->
+    <string name="detail_label_status">Status</string>
+    <string name="detail_label_device">Gerät</string>
+    <string name="detail_label_serial">Seriennummer</string>
+    <string name="detail_label_type">Typ</string>
+    <string name="detail_label_location">Standort</string>
+    <string name="detail_label_configuration">Konfiguration</string>
+    <string name="detail_label_currency">Währung</string>
+    <string name="detail_label_activated">Aktiviert am</string>
+    <string name="detail_label_id">Terminal-ID (intern)</string>
+    <string name="detail_action_link">Gerät linken</string>
+    <string name="detail_action_replace">Gerät ersetzen</string>
+    <string name="detail_action_unlink">Gerät trennen</string>
+    <string name="detail_action_refresh">Aktualisieren</string>
+    <string name="detail_action_trigger_config">Konfiguration auslösen</string>
+    <string name="detail_action_copy_id">Terminal-ID kopieren</string>
+    <string name="detail_decommissioned">Dieses Terminal ist stillgelegt.</string>
+    <string name="cd_rename">Umbenennen</string>
+    <string name="cd_more">Weitere Aktionen</string>
+
+    <!-- Scanner -->
+    <string name="scan_hint_serial">Seriennummer auf der Rückseite des Geräts scannen</string>
+    <string name="scan_hint_credentials">QR-Code mit den Zugangsdaten aus dem wallee-Portal scannen</string>
+    <string name="scan_terminal_line">Terminal: %1$s · %2$s</string>
+    <string name="scan_manual_entry">Seriennummer manuell eingeben</string>
+    <string name="scan_rationale">Die Kamera wird nur zum Lesen des Seriennummern-Codes verwendet.</string>
+    <string name="scan_placeholder_note">Phase 1: Platzhalter. Kamera und Erkennung folgen in Phase 4.</string>
+    <string name="scan_simulate_hit">Treffer simulieren</string>
+    <string name="cd_torch">Taschenlampe</string>
+
+    <!-- Ergebnis -->
+    <string name="result_linked">Gelinkt</string>
+    <string name="result_replaced">Gerät ersetzt</string>
+    <string name="result_unlinked">Gerät getrennt</string>
+    <string name="result_back_to_list">Zurück zur Liste</string>
+    <string name="result_link_next">Nächstes Terminal linken</string>
+    <string name="result_serial_line">S/N %1$s</string>
+    <string name="result_replaced_line">Neu: S/N %1$s · Alt: S/N %2$s</string>
+
+    <!-- Einstellungen -->
+    <string name="settings_title_2">Terminal Linker</string>
+    <string name="settings_section_credentials">Zugangsdaten</string>
+    <string name="settings_section_spaces">Spaces</string>
+    <string name="settings_section_display">Anzeige</string>
+    <string name="settings_section_about">Über</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_styleguide">Styleguide (Debug)</string>
+    <string name="settings_placeholder_note">Phase 1: Platzhalter. Inhalte folgen in Phase 2 und 5.</string>
+
+    <!-- Toast -->
+    <string name="toast_placeholder_success">Aktualisiert</string>
+    <string name="toast_placeholder_error">Keine Verbindung zu app-wallee.com</string>
+
+    <!-- Styleguide -->
+    <string name="styleguide_title_1">Styleguide</string>
+    <string name="styleguide_title_2">Komponenten</string>
+    <string name="styleguide_section_colors">Farben</string>
+    <string name="styleguide_section_type">Typografie</string>
+    <string name="styleguide_section_buttons">Buttons</string>
+    <string name="styleguide_section_inputs">Eingabefelder</string>
+    <string name="styleguide_section_segmented">Segmente</string>
+    <string name="styleguide_section_badges">Badges</string>
+    <string name="styleguide_section_rows">Listenzeilen</string>
+    <string name="styleguide_section_facts">Faktentabelle</string>
+    <string name="styleguide_section_header">Header &amp; Space-Chip</string>
+    <string name="styleguide_section_overlays">Sheet, Dialog, Toast</string>
+    <string name="styleguide_section_panel">Türkis-Fläche</string>
+    <string name="styleguide_section_icons">Icons</string>
+    <string name="styleguide_section_logo">Wortmarke</string>
+    <string name="styleguide_state_default">Normal</string>
+    <string name="styleguide_state_disabled">Deaktiviert</string>
+    <string name="styleguide_state_loading">Ladend</string>
+    <string name="styleguide_state_error">Fehler</string>
+    <string name="styleguide_state_focus">Fokus</string>
+    <string name="styleguide_state_on_turquoise">Auf Türkis</string>
+    <string name="styleguide_state_on_dark">Auf Schwarz</string>
+    <string name="styleguide_open_sheet">Bottom Sheet öffnen</string>
+    <string name="styleguide_open_dialog">Dialog öffnen</string>
+    <string name="styleguide_show_toast_success">Toast Erfolg</string>
+    <string name="styleguide_show_toast_error">Toast Fehler</string>
+    <string name="styleguide_dialog_title">Gerät trennen?</string>
+    <string name="styleguide_dialog_text">Gerät 2290012345 vom Terminal «Kasse 1» trennen? Das Terminal kann danach keine Zahlungen mehr annehmen, bis ein Gerät verknüpft ist.</string>
+    <string name="styleguide_dialog_confirm">Trennen</string>
+    <string name="styleguide_sample_body">Fliesstext in Roboto Regular 15 sp mit Zeilenhöhe 1.5. Wirkung durch Türkis-Flächen und Weissraum, nicht durch Fettdruck oder Schatten.</string>
+    <string name="styleguide_sample_label">Label 13 sp grau</string>
+    <string name="styleguide_sample_footnote">Fussnote Light 12 sp</string>
+    <string name="styleguide_sample_section">Abschnittstitel 17 sp</string>
+    <string name="styleguide_sample_serial">2290012345</string>
+    <string name="styleguide_sample_statement">Statement 24 sp auf Türkis</string>
+    <string name="styleguide_input_error_text">Zugangsdaten ungültig — User-ID und Authentication Key prüfen</string>
+    <string name="styleguide_input_placeholder">12345</string>
+
+    <!-- Bestätigungen / Confirmations -->
+    <string name="detail_confirm_replace">Gerät %1$s wird vom Terminal %2$s getrennt und durch ein neues ersetzt. Halten Sie das neue Gerät bereit.</string>
+    <string name="detail_confirm_replace_action">Weiter zum Scan</string>
+    <string name="detail_confirm_unlink">Gerät %1$s vom Terminal %2$s trennen? Das Terminal kann danach keine Zahlungen mehr annehmen, bis ein Gerät verknüpft ist.</string>
+    <string name="detail_confirm_unlink_action">Trennen</string>
+    <string name="scan_confirm_title">Seriennummer erkannt</string>
+    <string name="scan_confirm_link_with">Mit Terminal «%1$s» (%2$s) verknüpfen</string>
+    <string name="scan_confirm_link">Linken</string>
+    <string name="scan_confirm_replace">Ersetzen</string>
+    <string name="scan_rescan">Erneut scannen</string>
+</resources>

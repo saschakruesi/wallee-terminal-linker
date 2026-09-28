@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Terminal Linker</string>
+    <string name="brand_claim">#homeofpayment</string>
+    <string name="cd_wallee_logo">wallee</string>
+
+    <string name="action_cancel">Cancel</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_back">Back</string>
+    <string name="action_close">Close</string>
+    <string name="action_retry">Try again</string>
+    <string name="action_save">Save</string>
+    <string name="action_ok">OK</string>
+    <string name="value_none">—</string>
+    <string name="cd_chevron">Open</string>
+    <string name="cd_show_password">Show password</string>
+    <string name="cd_hide_password">Hide password</string>
+    <string name="cd_clear_search">Clear search</string>
+    <string name="cd_loading">Loading</string>
+    <string name="cd_selected">Selected</string>
+
+    <string name="badge_linked">Linked</string>
+    <string name="badge_unlinked">Unlinked</string>
+    <string name="badge_inactive">Inactive</string>
+    <string name="badge_preparing">Preparing</string>
+    <string name="badge_decommissioned">Decommissioned</string>
+    <string name="badge_error">Error</string>
+
+    <string name="setup_title_1">Setup</string>
+    <string name="setup_title_2">Connect to wallee</string>
+    <string name="setup_section_credentials">Credentials</string>
+    <string name="setup_qr_button">Scan QR</string>
+    <string name="setup_qr_hint">The QR code is generated in the wallee portal for the application user.</string>
+    <string name="setup_user_id">Application User ID</string>
+    <string name="setup_auth_key">Authentication Key</string>
+    <string name="setup_help">Create an application user in the wallee backend under Account → Users → Application Users. It needs a role with payment terminal permissions in every space.</string>
+    <string name="setup_help_link">Guide</string>
+    <string name="setup_test_and_save">Test connection &amp; save</string>
+    <string name="setup_remember">Remember credentials on this device</string>
+    <string name="setup_placeholder_note">Phase 1: form and connection test follow in phase 2.</string>
+
+    <string name="space_choose">Choose space</string>
+    <string name="space_search">Search space…</string>
+    <string name="space_recent">Recently used</string>
+    <string name="space_all">All spaces (A–Z)</string>
+    <string name="space_inactive">inactive</string>
+    <string name="space_add_manual">Add space ID manually</string>
+    <string name="space_settings">Settings</string>
+    <string name="space_placeholder_name">Hotel Muster – Reception</string>
+    <string name="cd_space_chip">Switch space</string>
+
+    <string name="terminals_title_1">Terminals</string>
+    <string name="terminals_search_hint">Name, terminal ID or serial number</string>
+    <string name="terminals_filter_all">All</string>
+    <string name="terminals_filter_unlinked">Unlinked</string>
+    <string name="terminals_filter_linked">Linked</string>
+    <string name="terminals_sort_label">Sort: %1$s</string>
+    <string name="terminals_sort_unlinked_first">Unlinked first</string>
+    <string name="terminals_status_line">%1$d terminals · updated %2$s</string>
+    <string name="terminals_empty">There are no terminals in this space. Terminals are created in the wallee backend under Terminals → Payment Terminals.</string>
+    <string name="terminals_no_match">No terminal matches ‹%1$s›</string>
+    <string name="terminals_clear_search">Clear search</string>
+    <string name="terminals_placeholder_note">Phase 1: sample data. The list is loaded from wallee in phase 3.</string>
+
+    <string name="detail_label_status">Status</string>
+    <string name="detail_label_device">Device</string>
+    <string name="detail_label_serial">Serial number</string>
+    <string name="detail_label_type">Type</string>
+    <string name="detail_label_location">Location</string>
+    <string name="detail_label_configuration">Configuration</string>
+    <string name="detail_label_currency">Currency</string>
+    <string name="detail_label_activated">Activated on</string>
+    <string name="detail_label_id">Terminal ID (internal)</string>
+    <string name="detail_action_link">Link device</string>
+    <string name="detail_action_replace">Replace device</string>
+    <string name="detail_action_unlink">Unlink device</string>
+    <string name="detail_action_refresh">Refresh</string>
+    <string name="detail_action_trigger_config">Trigger configuration</string>
+    <string name="detail_action_copy_id">Copy terminal ID</string>
+    <string name="detail_decommissioned">This terminal is decommissioned.</string>
+    <string name="cd_rename">Rename</string>
+    <string name="cd_more">More actions</string>
+
+    <string name="scan_hint_serial">Scan the serial number on the back of the device</string>
+    <string name="scan_hint_credentials">Scan the QR code with the credentials from the wallee portal</string>
+    <string name="scan_terminal_line">Terminal: %1$s · %2$s</string>
+    <string name="scan_manual_entry">Enter serial number manually</string>
+    <string name="scan_rationale">The camera is only used to read the serial number code.</string>
+    <string name="scan_placeholder_note">Phase 1: placeholder. Camera and detection follow in phase 4.</string>
+    <string name="scan_simulate_hit">Simulate hit</string>
+    <string name="cd_torch">Torch</string>
+
+    <string name="result_linked">Linked</string>
+    <string name="result_replaced">Device replaced</string>
+    <string name="result_unlinked">Device unlinked</string>
+    <string name="result_back_to_list">Back to list</string>
+    <string name="result_link_next">Link next terminal</string>
+    <string name="result_serial_line">S/N %1$s</string>
+    <string name="result_replaced_line">New: S/N %1$s · Old: S/N %2$s</string>
+
+    <string name="settings_title_2">Terminal Linker</string>
+    <string name="settings_section_credentials">Credentials</string>
+    <string name="settings_section_spaces">Spaces</string>
+    <string name="settings_section_display">Display</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_styleguide">Style guide (debug)</string>
+    <string name="settings_placeholder_note">Phase 1: placeholder. Content follows in phases 2 and 5.</string>
+
+    <string name="toast_placeholder_success">Updated</string>
+    <string name="toast_placeholder_error">No connection to app-wallee.com</string>
+
+    <string name="styleguide_title_1">Style guide</string>
+    <string name="styleguide_title_2">Components</string>
+    <string name="styleguide_section_colors">Colours</string>
+    <string name="styleguide_section_type">Typography</string>
+    <string name="styleguide_section_buttons">Buttons</string>
+    <string name="styleguide_section_inputs">Inputs</string>
+    <string name="styleguide_section_segmented">Segments</string>
+    <string name="styleguide_section_badges">Badges</string>
+    <string name="styleguide_section_rows">List rows</string>
+    <string name="styleguide_section_facts">Fact table</string>
+    <string name="styleguide_section_header">Header &amp; space chip</string>
+    <string name="styleguide_section_overlays">Sheet, dialog, toast</string>
+    <string name="styleguide_section_panel">Turquoise panel</string>
+    <string name="styleguide_section_icons">Icons</string>
+    <string name="styleguide_section_logo">Wordmark</string>
+    <string name="styleguide_state_default">Default</string>
+    <string name="styleguide_state_disabled">Disabled</string>
+    <string name="styleguide_state_loading">Loading</string>
+    <string name="styleguide_state_error">Error</string>
+    <string name="styleguide_state_focus">Focus</string>
+    <string name="styleguide_state_on_turquoise">On turquoise</string>
+    <string name="styleguide_state_on_dark">On black</string>
+    <string name="styleguide_open_sheet">Open bottom sheet</string>
+    <string name="styleguide_open_dialog">Open dialog</string>
+    <string name="styleguide_show_toast_success">Toast success</string>
+    <string name="styleguide_show_toast_error">Toast error</string>
+    <string name="styleguide_dialog_title">Unlink device?</string>
+    <string name="styleguide_dialog_text">Unlink device 2290012345 from terminal “Kasse 1”? The terminal cannot accept payments until a device is linked.</string>
+    <string name="styleguide_dialog_confirm">Unlink</string>
+    <string name="styleguide_sample_body">Body text in Roboto Regular 15 sp with 1.5 line height. Impact comes from turquoise panels and white space, not from bold weights or shadows.</string>
+    <string name="styleguide_sample_label">Label 13 sp grey</string>
+    <string name="styleguide_sample_footnote">Footnote Light 12 sp</string>
+    <string name="styleguide_sample_section">Section title 17 sp</string>
+    <string name="styleguide_sample_serial">2290012345</string>
+    <string name="styleguide_sample_statement">Statement 24 sp on turquoise</string>
+    <string name="styleguide_input_error_text">Invalid credentials — check user ID and authentication key</string>
+    <string name="styleguide_input_placeholder">12345</string>
+
+    <!-- Bestätigungen / Confirmations -->
+    <string name="detail_confirm_replace">Device %1$s will be unlinked from terminal %2$s and replaced by a new one. Have the new device ready.</string>
+    <string name="detail_confirm_replace_action">Continue to scan</string>
+    <string name="detail_confirm_unlink">Unlink device %1$s from terminal %2$s? The terminal cannot accept payments until a device is linked.</string>
+    <string name="detail_confirm_unlink_action">Unlink</string>
+    <string name="scan_confirm_title">Serial number detected</string>
+    <string name="scan_confirm_link_with">Link with terminal “%1$s” (%2$s)</string>
+    <string name="scan_confirm_link">Link</string>
+    <string name="scan_confirm_replace">Replace</string>
+    <string name="scan_rescan">Scan again</string>
+</resources>
