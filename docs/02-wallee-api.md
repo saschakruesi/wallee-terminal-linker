@@ -67,7 +67,7 @@ suspend fun <T> request(method: String, path: String, query: Map<String, String>
 | 429 | «Zu viele Anfragen» → Backoff 2 s, 4 s, 8 s (nur GET automatisch) |
 | Netzwerk | «Keine Verbindung zu app-wallee.com» + «Erneut versuchen» |
 
-- Timeout 20 s (Connect 10 s). Keine automatischen Retries bei POST/PATCH — Link/Unlink sind nicht
+- Timeout 20 s (Connect 10 s), Call-Timeout 30 s. Keine automatischen Retries bei POST/PATCH — Link/Unlink sind nicht
   idempotent aus Sicht der UI (Nutzer muss den Zustand sehen).
 - Alle Aufrufe mit `Dispatchers.IO`, abbrechbar über den Coroutine-Scope des Screens.
 
@@ -77,7 +77,7 @@ suspend fun <T> request(method: String, path: String, query: Map<String, String>
 
 | Zweck | Call |
 |---|---|
-| Alle Spaces, auf die der Application User Zugriff hat | `GET /spaces?limit=100[&after=<letzte id>]` → `{ data: Space[], hasMore, limit }` — **ohne** `space`-Header; Cursor-Pagination (`after`/`before`), kein `offset` |
+| Alle Spaces, auf die der Application User Zugriff hat | `GET /spaces?limit=100` → `{ data: Space[], hasMore, limit }` — **ohne** `space`-Header, **ohne** `expand`, ein einziger Request (max. 100 Spaces; weitere per ID). Die API paginiert per Cursor (`after`/`before`), kein `offset` |
 | Einzelnen Space prüfen (Fallback / Verbindungstest) | `GET /spaces/{id}` → `Space` |
 
 `Space`-Felder für die UI: `id`, `name`, `state` (`ACTIVE`, `INACTIVE`, `DELETING`, `DELETED`),

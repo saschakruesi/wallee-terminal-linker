@@ -177,6 +177,7 @@
     <string name="error_404">Terminal nicht (mehr) gefunden.</string>
     <string name="error_409">Das Terminal wurde inzwischen verändert.</string>
     <string name="error_429">Zu viele Anfragen — bitte kurz warten.</string>
+    <string name="error_timeout">Zeitüberschreitung — app-wallee.com antwortet nicht. Netzverbindung prüfen und erneut versuchen.</string>
     <string name="error_network">Keine Verbindung zu app-wallee.com.</string>
     <string name="error_generic">Fehler von wallee (HTTP %1$d).</string>
     <string name="error_no_credentials">Keine Zugangsdaten hinterlegt.</string>

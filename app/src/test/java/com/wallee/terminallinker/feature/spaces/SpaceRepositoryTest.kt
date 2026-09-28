@@ -70,13 +70,12 @@ class SpaceRepositoryTest {
         """{"id":$id,"name":"$name","state":"$state"}"""
 
     @Test
-    fun `discover pages with after and stores sorted spaces`() = runBlocking {
-        server.enqueue(page(space(20, "Zoo"), space(10, "Bar"), hasMore = true))
-        server.enqueue(page(space(30, "Alpha", "INACTIVE"), hasMore = false))
+    fun `discover makes a single request and stores sorted spaces`() = runBlocking {
+        server.enqueue(page(space(20, "Zoo"), space(10, "Bar"), space(30, "Alpha", "INACTIVE"), hasMore = true))
         val result = repo.discover()
         assertTrue(result is DiscoveryResult.Found)
-        assertEquals("/api/v2.0/spaces?limit=100&expand=account", server.takeRequest().path)
-        assertEquals("/api/v2.0/spaces?limit=100&after=10&expand=account", server.takeRequest().path)
+        assertEquals("/api/v2.0/spaces?limit=100", server.takeRequest().path)
+        assertEquals(1, server.requestCount)
         assertEquals(listOf("Alpha", "Bar", "Zoo"), repo.spaces.first().map { it.name })
         assertEquals(SpaceMode.AUTO, storage.spaceMode.value)
         assertEquals(listOf(false, true, true), repo.spaces.first().map { it.active })
@@ -123,7 +122,7 @@ class SpaceRepositoryTest {
         storage.setDiscoveredSpaces(listOf(SpaceRef(1, "Hotel"), SpaceRef(2, "Inactive", active = false)))
         server.enqueue(MockResponse().setResponseCode(200).setBody(space(3, "Manual")))
         val verified = repo.verify(3)
-        assertEquals("/api/v2.0/spaces/3?expand=account", server.takeRequest().path)
+        assertEquals("/api/v2.0/spaces/3", server.takeRequest().path)
         repo.addManual(verified)
         assertEquals(listOf(1L, 2L, 3L), repo.spaces.first().map { it.id })
         assertEquals(3L, repo.chooseActive(preferredId = 3)?.id)

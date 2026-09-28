@@ -76,7 +76,10 @@ class SpaceRepository(
     val manualSpaces: Flow<List<SpaceRef>> = storage.manualSpaces
     val mode: Flow<SpaceMode> = storage.spaceMode
 
-    /** Connection test: lists all spaces of the application user, paging with `after` until `hasMore` is false. */
+    /**
+     * Connection test: one `GET /spaces?limit=100` without expand — a single round trip so the test stays
+     * fast even on slow networks. Users with more than [MAX_SPACES] spaces add the rest by ID.
+     */
     suspend fun discover(): DiscoveryResult {
         val spaces = try {
             fetchAllSpaces()
@@ -105,19 +108,8 @@ class SpaceRepository(
     }
 
     private suspend fun fetchAllSpaces(): List<Space> {
-        val all = mutableListOf<Space>()
-        var after: Long? = null
-        repeat(MAX_PAGES) {
-            val query = buildList {
-                add("limit" to PAGE_SIZE.toString())
-                after?.let { add("after" to it.toString()) }
-            }
-            val page: ListResponse<Space> = client.get("/spaces", query = query, expand = listOf("account"))
-            all += page.data
-            if (!page.hasMore || page.data.isEmpty()) return all
-            after = page.data.last().id
-        }
-        return all
+        val page: ListResponse<Space> = client.get("/spaces", query = listOf("limit" to MAX_SPACES.toString()))
+        return page.data
     }
 
     private suspend fun switchToManual(forbidden: Boolean): DiscoveryResult.None {
@@ -128,7 +120,7 @@ class SpaceRepository(
 
     /** `GET /spaces/{id}` — verifies a manually entered ID and returns its name. */
     suspend fun verify(id: Long): SpaceRef {
-        val space: Space = client.get("/spaces/$id", expand = listOf("account"))
+        val space: Space = client.get("/spaces/$id")
         return space.toRef().copy(manual = true)
     }
 
@@ -181,8 +173,7 @@ class SpaceRepository(
         accountName = account?.name,
     )
 
-    private companion object {
-        const val PAGE_SIZE = 100
-        const val MAX_PAGES = 20
+    companion object {
+        const val MAX_SPACES = 100
     }
 }

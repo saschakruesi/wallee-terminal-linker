@@ -164,6 +164,7 @@
     <string name="error_404">Terminal not found (any more).</string>
     <string name="error_409">The terminal was modified in the meantime.</string>
     <string name="error_429">Too many requests — please wait a moment.</string>
+    <string name="error_timeout">Timeout — app-wallee.com is not responding. Check the network connection and try again.</string>
     <string name="error_network">No connection to app-wallee.com.</string>
     <string name="error_generic">Error from wallee (HTTP %1$d).</string>
     <string name="error_no_credentials">No credentials stored.</string>

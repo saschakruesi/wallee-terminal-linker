@@ -17,8 +17,12 @@ class WalleeApiException(
     val isForbidden: Boolean get() = status == 403
 }
 
-/** Transport failure: no connection, DNS, timeout, TLS. */
-class WalleeNetworkException(cause: Throwable) : IOException(cause.message ?: "network error", cause)
+/** Transport failure: no connection, DNS, timeout, TLS. [isTimeout] separates slow from unreachable. */
+class WalleeNetworkException(cause: Throwable) : IOException(cause.message ?: "network error", cause) {
+    val isTimeout: Boolean =
+        cause is java.net.SocketTimeoutException ||
+            (cause is java.io.InterruptedIOException && cause.message?.contains("timeout", ignoreCase = true) == true)
+}
 
 /** Thrown when a request needs credentials but none are stored. */
 class MissingCredentialsException : IllegalStateException("no credentials")
