@@ -154,7 +154,9 @@ Regeln:
 - `serialNumber` ist ein Query-Parameter, URL-kodiert; er wird exakt so in `requestPath` des JWT signiert.
 - Nach `204` **immer** `GET /payment/terminals/{id}` nachladen und erst dann «Gelinkt» anzeigen — die
   Wahrheit ist der Serverzustand (`deviceSerialNumber`), nicht der 204.
-- Fehlerfälle von `link` (aus 422/409-Body anzeigen, im Test-Space empirisch sammeln — Phase 4):
+- Fehlerfälle von `link` (aus 422/409-Body anzeigen; die App zeigt `message` aus dem Body unter der Seriennummer
+  im Bestätigungs-Sheet. Stand 29.09.2026: gegen den API-Mock geprüft, die echten `code`/`message`-Werte von
+  wallee sind noch mit dem Test-Space zu sammeln — Phase 4, Punkt 7):
   Seriennummer unbekannt/nicht registriert; Gerät bereits mit einem anderen Terminal gelinkt (dann Hinweis
   «Zuerst am anderen Terminal trennen»); Terminal nicht im Zustand `ACTIVE`/`PREPARING`.
 - **Replace ist zweistufig und nicht atomar.** Schlägt `link` nach erfolgreichem `unlink` fehl, ist das

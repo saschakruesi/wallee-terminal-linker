@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.wallee.terminallinker.R
 import com.wallee.terminallinker.core.ui.ControlShape
@@ -68,7 +70,7 @@ fun WPrimaryButton(
     Box(
         modifier = modifier
             .then(if (large) Modifier.fillMaxWidth() else Modifier)
-            .height(if (large) WalleeSize.BigAction else WalleeSize.Control)
+            .defaultMinSize(minHeight = if (large) WalleeSize.BigAction else WalleeSize.Control)
             .alpha(if (enabled) 1f else DISABLED_ALPHA)
             .clip(ControlShape)
             .background(background)
@@ -80,13 +82,19 @@ fun WPrimaryButton(
                 onClick = onClick,
             )
             .semantics { if (loading) stateDescription = loadingDescription }
-            .padding(horizontal = WalleeSpacing.S3),
+            .padding(horizontal = WalleeSpacing.S3, vertical = 6.dp),
         contentAlignment = Alignment.Center,
     ) {
         if (loading) {
             Spinner(size = 20.dp, color = foreground)
         } else {
-            Text(text = text, style = WalleeTextStyles.button, color = foreground, maxLines = 1)
+            Text(
+                text = text,
+                style = WalleeTextStyles.button,
+                color = foreground,
+                maxLines = 2,
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
@@ -117,7 +125,7 @@ fun WSecondaryButton(
     Box(
         modifier = modifier
             .then(if (large) Modifier.fillMaxWidth() else Modifier)
-            .height(if (large) WalleeSize.BigAction else WalleeSize.Control)
+            .defaultMinSize(minHeight = if (large) WalleeSize.BigAction else WalleeSize.Control)
             .alpha(if (enabled) 1f else DISABLED_ALPHA)
             .clip(ControlShape)
             .background(background)
@@ -129,7 +137,7 @@ fun WSecondaryButton(
                 role = Role.Button,
                 onClick = onClick,
             )
-            .padding(horizontal = WalleeSpacing.S2),
+            .padding(horizontal = WalleeSpacing.S2, vertical = 6.dp),
         contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -142,7 +150,13 @@ fun WSecondaryButton(
                 )
                 Spacer(Modifier.width(WalleeSpacing.S1))
             }
-            Text(text = text, style = WalleeTextStyles.button, color = foreground, maxLines = 1)
+            Text(
+                text = text,
+                style = WalleeTextStyles.button,
+                color = foreground,
+                maxLines = 2,
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
@@ -165,7 +179,7 @@ fun WTextButton(
     val interaction = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
-            .height(WalleeSize.Control)
+            .defaultMinSize(minHeight = WalleeSize.Control)
             .alpha(if (enabled) 1f else DISABLED_ALPHA)
             .clip(ControlShape)
             .clickable(
@@ -178,7 +192,7 @@ fun WTextButton(
             .padding(horizontal = WalleeSpacing.S1),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = text, style = WalleeTextStyles.button, color = color, maxLines = 1)
+        Text(text = text, style = WalleeTextStyles.button, color = color, maxLines = 2, textAlign = TextAlign.Center)
     }
 }
 

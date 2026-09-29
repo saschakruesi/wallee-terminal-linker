@@ -1,6 +1,7 @@
 package com.wallee.terminallinker.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -54,10 +55,10 @@ fun WDialog(
                     horizontalArrangement = Arrangement.End,
                 ) {
                     if (dismissButton != null) {
-                        dismissButton()
+                        Box(modifier = Modifier.weight(1f, fill = false)) { dismissButton() }
                         Spacer(Modifier.width(WalleeSpacing.S1))
                     }
-                    confirmButton()
+                    Box(modifier = Modifier.weight(1f, fill = false)) { confirmButton() }
                 }
             }
         }

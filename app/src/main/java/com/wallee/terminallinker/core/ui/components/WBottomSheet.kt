@@ -28,7 +28,7 @@ fun WBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
-        sheetState = rememberModalBottomSheetState(),
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         shape = SheetShape,
         containerColor = WalleeColors.Bg,
         contentColor = WalleeColors.Text,

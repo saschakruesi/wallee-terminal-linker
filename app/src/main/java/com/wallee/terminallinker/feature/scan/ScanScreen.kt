@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wallee.terminallinker.R
 import com.wallee.terminallinker.core.ui.CardShape
@@ -628,7 +629,7 @@ private fun FailedSheet(
     }
 }
 
-/** The scanner is portrait only (docs/01); the rest of the app is free. */
+/** The scanner is portrait only (docs/01) with light status-bar icons on the black camera view; both are restored on exit. */
 @Composable
 private fun LockPortrait() {
     val context = LocalContext.current
@@ -636,7 +637,12 @@ private fun LockPortrait() {
         val activity = context.findActivity()
         val previous = activity?.requestedOrientation ?: ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        onDispose { activity?.requestedOrientation = previous }
+        val insets = activity?.window?.let { WindowCompat.getInsetsController(it, it.decorView) }
+        insets?.isAppearanceLightStatusBars = false
+        onDispose {
+            activity?.requestedOrientation = previous
+            insets?.isAppearanceLightStatusBars = true
+        }
     }
 }
 
