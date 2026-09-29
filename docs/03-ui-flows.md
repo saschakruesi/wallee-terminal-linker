@@ -155,7 +155,8 @@ Headline: «Terminals» / «<Space-Name>».
 - **Leerzustände:** kein Terminal im Space → «In diesem Space sind keine Terminals angelegt. Terminals werden
   im wallee-Backend unter Terminals → Payment Terminals erstellt.»; Suche ohne Treffer → «Kein Terminal
   passt zu ‹xyz›» + «Suche leeren»; Netzfehler → Panel mit «Erneut versuchen».
-- **Schnellaktion (optional, Phase 5):** Long-Press auf eine ungelinkte Zeile → direkt «Linken» (Scanner).
+- **Schnellaktion (Phase 5):** Long-Press auf eine ungelinkte, aktive Zeile → Haptik, Detail + Scanner werden
+  geöffnet (Zurück aus dem Scanner landet im Detail).
 
 ## Screen: Terminal-Detail (`TerminalDetail`)
 
@@ -278,10 +279,17 @@ bestätigt, zeigt aber noch keine Seriennummer. Bitte in 10 Sekunden aktualisier
 Headline: «Einstellungen» / «Terminal Linker».
 
 - **Zugangsdaten:** User-ID, Key maskiert, «ändern» → Setup-Formular.
-- **Spaces:** Modus (automatisch / manuell), Liste manuell erfasster Spaces mit «Entfernen».
-- **Anzeige:** Sprache (System / Deutsch / English), «Stillgelegte Terminals anzeigen».
-- **Über:** Version, «Nach Updates suchen» (öffnet Release-Seite), Lizenzen (Roboto, ML Kit, OSS).
+- **Spaces:** Modus (automatisch / manuell), Liste **aller** Spaces (aus wallee und manuell erfasst) je mit
+  «Entfernen» (Bestätigungsdialog; wirkt nur in der App, nie in wallee). Entfernte Spaces aus wallee
+  erscheinen darunter unter «Entfernte Spaces» mit «Wiederherstellen». «Space-ID hinzufügen».
+- **Anzeige:** Sprache (System / Deutsch / English, Segmented; wechselt sofort), «Stillgelegte Terminals
+  anzeigen».
+- **Über:** Version, «Nach Updates suchen» (prüft sofort gegen GitHub Releases; bei neuer Version öffnet ein
+  Tipp die Release-Seite), «Release-Seite öffnen», Lizenzen (Roboto, ML Kit, AndroidX, OkHttp, kotlinx).
 - **Alle lokalen Daten löschen** (Textbutton orange, Bestätigung) → zurück zu Setup.
+
+Update-Hinweis (docs/01): dezenter grauer Streifen unter dem Header der Terminalliste «Version x.y verfügbar»
+mit «Ansehen» und ✕ (blendet genau diese Version aus).
 
 ## Barrierefreiheit & Bedienung
 

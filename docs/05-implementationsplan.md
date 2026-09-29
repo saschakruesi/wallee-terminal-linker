@@ -102,8 +102,16 @@ falsche S/N liefert die wallee-Meldung im Klartext; Kamera-Permission abgelehnt 
 5. Netzwerk-Robustheit: Backoff bei 429 (GET), klare Offline-Panels, alle Aufrufe abbrechbar.
 6. Compose-UI-Tests für Setup, Liste (Filter/Suche) und Link-Flow (mit gemocktem Scanner).
 
+7. Spaces in den Einstellungen entfernen (auch aus wallee synchronisierte; nur in der App, wiederherstellbar —
+   siehe `docs/02 §3.1`, Punkt 3).
+
 **DoD:** Alle Screens in DE und EN ohne abgeschnittene Texte (Schriftgrösse 1.3× getestet); Prozess-Tod im
 Scanner/Detail verliert keinen Zustand ausser dem laufenden Scan; UI-Tests grün in CI.
+
+**Stand (29.09.2026, Branch `phase-5-polish`):** Punkte 1–7 implementiert. UI-Tests laufen als Job `ui-tests`
+in `ci.yml` auf einem API-35-Emulator (`connectedDebugAndroidTest`; Setup, Liste, Link-Flow mit gemocktem
+Scanner, Einstellungen/Spaces gegen einen In-Process-MockWebServer). Offen für die Abnahme: manueller Check
+DE/EN mit Schriftgrösse 1.3× und Prozess-Tod («Don't keep activities») auf dem Testgerät.
 
 ## Phase 6 — Release
 

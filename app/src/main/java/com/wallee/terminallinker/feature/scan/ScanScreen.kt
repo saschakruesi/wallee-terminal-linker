@@ -108,6 +108,7 @@ fun ScanScreen(
     onCredentialsScanned: () -> Unit,
     onToList: () -> Unit,
     spacesOnly: Boolean = false,
+    scanner: BarcodeScanner = CameraBarcodeScanner,
 ) {
     val context = LocalContext.current
     LockPortrait()
@@ -176,7 +177,7 @@ fun ScanScreen(
         }
 
         if (hasCamera && granted) {
-            CameraScanner(
+            scanner.Content(
                 formats = if (credentials) ScanFormats.QR_ONLY else ScanFormats.SERIAL,
                 viewfinder = { finderRect },
                 paused = scanningPaused,

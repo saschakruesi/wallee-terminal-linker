@@ -48,6 +48,35 @@ object ScanFormats {
 }
 
 /**
+ * Source of scanned values, so the scan screen can run with a fake in UI tests (docs/05 Phase 5.6).
+ * The only production implementation is [CameraBarcodeScanner].
+ */
+fun interface BarcodeScanner {
+    @Composable
+    fun Content(
+        formats: List<Int>,
+        viewfinder: () -> Rect?,
+        paused: Boolean,
+        torch: Boolean,
+        onDetected: (String) -> Unit,
+        modifier: Modifier,
+    )
+}
+
+/** The real camera: CameraX + ML Kit via [CameraScanner]. */
+object CameraBarcodeScanner : BarcodeScanner {
+    @Composable
+    override fun Content(
+        formats: List<Int>,
+        viewfinder: () -> Rect?,
+        paused: Boolean,
+        torch: Boolean,
+        onDetected: (String) -> Unit,
+        modifier: Modifier,
+    ) = CameraScanner(formats, viewfinder, paused, torch, onDetected, modifier)
+}
+
+/**
  * CameraX preview + ML Kit analyzer, encapsulated without any API dependency (docs/05 Phase 4.1).
  * Only barcodes whose centre lies inside [viewfinder] (preview pixels) count; the first value seen twice in
  * a row is reported once via [onDetected]. While [paused] frames are dropped. [torch] toggles the flash.

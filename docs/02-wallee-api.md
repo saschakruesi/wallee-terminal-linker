@@ -93,6 +93,10 @@ keinen `account`-Header. Verhalten der App:
 2. Liefert er 0 Spaces oder 403 → die App wechselt in den **manuellen Modus**: Der Nutzer erfasst
    Space-IDs von Hand, jede wird mit `GET /spaces/{id}` verifiziert (Name wird angezeigt) und lokal gemerkt.
    Beide Modi münden in dieselbe Space-Liste (`SpaceRepository.spaces: Flow<List<SpaceRef>>`).
+3. **Entfernen (Phase 5):** In den Einstellungen kann jeder Space aus der App entfernt werden — nie aus wallee.
+   Manuell erfasste Spaces werden gelöscht; aus `GET /spaces` stammende werden nur ausgeblendet
+   (`hiddenSpaceIds` in DataStore), damit die nächste Discovery sie nicht zurückbringt, und sind in den
+   Einstellungen unter «Entfernte Spaces» wiederherstellbar. War der Space aktiv, muss neu gewählt werden.
 
 Nur Spaces mit `state = ACTIVE` sind wählbar; andere werden ausgegraut angezeigt.
 

@@ -66,7 +66,9 @@ Schichtregel: Composables → ViewModel (StateFlow `UiState`) → Repository (`T
 | Was | Wo | Hinweis |
 |---|---|---|
 | Application User ID, Authentication Key | `EncryptedSharedPreferences` (`tl.credentials`) | Ein Credential-Satz pro App-Installation (ein Application User hat typischerweise Zugriff auf mehrere Spaces). Wechsel = neu einrichten. |
-| Aktiver Space, Sprache, Sortierung/Filter der Liste, «zuletzt genutzte Spaces» | DataStore `tl.ui` | Unkritisch |
+| Aktiver Space, Sortierung/Filter der Liste, «zuletzt genutzte Spaces», ausgeblendete Spaces, Ergebnis des Update-Checks | DataStore `tl.ui` | Unkritisch |
+| Sprache | SharedPreferences `tl.locale` | Muss synchron in `attachBaseContext` gelesen werden, deshalb nicht DataStore; ab Android 13 zusätzlich als Per-App-Sprache gespiegelt |
+| Suchtext der Terminalliste | `SavedStateHandle` | Überlebt Prozess-Tod, nicht den App-Neustart |
 | Letzte Terminalliste je Space | In-Memory im Repository (+ optional DataStore-JSON für Schnellstart) | Nur Anzeige-Cache; Aktionen laden immer frisch |
 | Manuell erfasste Space-IDs (Fallback, siehe 02 §3) | DataStore `tl.ui.manualSpaces` | Nur wenn `GET /spaces` für den Application User nicht funktioniert |
 
