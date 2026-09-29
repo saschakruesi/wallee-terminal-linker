@@ -4,19 +4,23 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.wallee.terminallinker.BuildConfig
+import com.wallee.terminallinker.di.appContainer
 import com.wallee.terminallinker.feature.link.ResultScreen
 import com.wallee.terminallinker.feature.scan.ScanScreen
 import com.wallee.terminallinker.feature.settings.SettingsScreen
 import com.wallee.terminallinker.feature.setup.SetupScreen
 import com.wallee.terminallinker.feature.styleguide.StyleguideScreen
 import com.wallee.terminallinker.feature.terminals.TerminalDetailScreen
+import com.wallee.terminallinker.feature.terminals.TerminalFilter
 import com.wallee.terminallinker.feature.terminals.TerminalsScreen
+import kotlinx.coroutines.launch
 
 private const val TRANSITION_MS = 200
 
@@ -26,6 +30,8 @@ private const val TRANSITION_MS = 200
  */
 @Composable
 fun AppNavGraph(startDestination: Any, navController: NavHostController = rememberNavController()) {
+    val container = appContainer()
+    val scope = rememberCoroutineScope()
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -60,9 +66,14 @@ fun AppNavGraph(startDestination: Any, navController: NavHostController = rememb
                 onReplace = {
                     navController.navigate(ScanRoute(mode = ScanMode.REPLACE, terminalId = route.terminalId))
                 },
-                onUnlinked = { serial ->
+                onUnlinked = { serial, confirmed ->
                     navController.navigate(
-                        ResultRoute(route.terminalId, ResultOutcome.UNLINKED, previousSerial = serial),
+                        ResultRoute(
+                            route.terminalId,
+                            ResultOutcome.UNLINKED,
+                            previousSerial = serial,
+                            confirmed = confirmed,
+                        ),
                     )
                 },
             )
@@ -73,13 +84,17 @@ fun AppNavGraph(startDestination: Any, navController: NavHostController = rememb
                 mode = route.mode,
                 terminalId = route.terminalId,
                 onClose = { navController.popBackStack() },
-                onLinked = { terminalId, serial, previousSerial ->
-                    val outcome = if (route.mode == ScanMode.REPLACE) ResultOutcome.REPLACED else ResultOutcome.LINKED
-                    navController.navigate(ResultRoute(terminalId, outcome, serial, previousSerial)) {
+                onLinked = { terminalId, outcome, serial, previousSerial, confirmed ->
+                    navController.navigate(ResultRoute(terminalId, outcome, serial, previousSerial, confirmed)) {
                         popUpTo<TerminalDetailRoute> { inclusive = false }
                     }
                 },
                 onCredentialsScanned = { navController.popBackStack() },
+                onToList = {
+                    navController.navigate(TerminalsRoute) {
+                        popUpTo<TerminalsRoute> { inclusive = true }
+                    }
+                },
                 spacesOnly = route.spacesOnly,
             )
         }
@@ -93,6 +108,8 @@ fun AppNavGraph(startDestination: Any, navController: NavHostController = rememb
                     }
                 },
                 onLinkNext = {
+                    // «Nächstes Terminal linken»: list filtered to unlinked (docs/03 §Ergebnis).
+                    scope.launch { container.uiPrefs.setTerminalFilter(TerminalFilter.UNLINKED) }
                     navController.navigate(TerminalsRoute) {
                         popUpTo<TerminalsRoute> { inclusive = true }
                     }

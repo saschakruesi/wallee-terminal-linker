@@ -36,7 +36,12 @@ import com.wallee.terminallinker.di.appContainer
  * and is handed over in memory via [com.wallee.terminallinker.core.auth.CredentialHandoff].
  */
 @Composable
-fun CredentialScanControls(spacesOnly: Boolean, onApplied: () -> Unit) {
+fun CredentialScanControls(
+    spacesOnly: Boolean,
+    onApplied: () -> Unit,
+    externalRaw: String? = null,
+    onExternalConsumed: () -> Unit = {},
+) {
     val container = appContainer()
     val context = LocalContext.current
     var pasteOpen by remember { mutableStateOf(false) }
@@ -44,17 +49,21 @@ fun CredentialScanControls(spacesOnly: Boolean, onApplied: () -> Unit) {
     var parsed by remember { mutableStateOf<ScannedCredentials?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
 
+    androidx.compose.runtime.LaunchedEffect(externalRaw) {
+        val value = externalRaw ?: return@LaunchedEffect
+        CredentialQr.parse(value).fold(
+            onSuccess = { parsed = it },
+            onFailure = { error = it.toUserMessage(context) },
+        )
+        onExternalConsumed()
+    }
+
     if (BuildConfig.DEBUG) {
         WSecondaryButton(text = stringResource(R.string.qr_paste_label), onClick = {
             pasteOpen = true
         }, onDark = true, large = true)
         Spacer(Modifier.height(WalleeSpacing.S1))
     }
-    Text(
-        text = stringResource(R.string.qr_phase_note),
-        style = WalleeTextStyles.footnote,
-        color = WalleeColors.White.copy(alpha = 0.7f),
-    )
 
     if (pasteOpen) {
         WBottomSheet(onDismissRequest = { pasteOpen = false }) {

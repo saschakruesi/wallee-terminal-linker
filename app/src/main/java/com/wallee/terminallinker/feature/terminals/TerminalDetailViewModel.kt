@@ -38,6 +38,12 @@ class TerminalDetailViewModel(private val container: AppContainer, private val t
     private val _toasts = MutableSharedFlow<ToastEvent>(extraBufferCapacity = 4)
     val toasts: SharedFlow<ToastEvent> = _toasts
 
+    /** Emitted after a successful unlink: previous serial and whether the reload confirmed the unlink. */
+    data class Unlinked(val previousSerial: String?, val confirmed: Boolean)
+
+    private val _unlinked = MutableSharedFlow<Unlinked>(extraBufferCapacity = 1)
+    val unlinked: SharedFlow<Unlinked> = _unlinked
+
     init {
         viewModelScope.launch {
             val spaceId = container.spaceRepository.activeSpace.first()?.id
@@ -124,6 +130,15 @@ class TerminalDetailViewModel(private val container: AppContainer, private val t
     }
 
     fun onIdCopied() = toast(container.appContext.getString(R.string.detail_id_copied))
+
+    /** `unlink` → reload → result screen (docs/03 §Terminal-Detail, «Gerät trennen»). */
+    fun unlink() = action { spaceId ->
+        val previous = _state.value.terminal?.deviceSerialNumber
+        repo.unlink(spaceId, terminalId)
+        val fresh = runCatching { repo.get(spaceId, terminalId) }.getOrNull()
+        fresh?.let { f -> _state.update { it.copy(terminal = f) } }
+        _unlinked.tryEmit(Unlinked(previous, confirmed = fresh?.linked == false))
+    }
 
     private fun action(block: suspend (spaceId: Long) -> Unit) {
         val spaceId = _state.value.spaceId ?: return

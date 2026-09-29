@@ -60,7 +60,7 @@
     <string name="terminals_empty">There are no terminals in this space. Terminals are created in the wallee backend under Terminals → Payment Terminals.</string>
     <string name="terminals_no_match">No terminal matches ‹%1$s›</string>
     <string name="terminals_clear_search">Clear search</string>
-    <string name="terminals_placeholder_note">Link, replace and unlink follow with the scanner in phase 4.</string>
+    <string name="terminals_placeholder_note">Tap a terminal to link, replace or unlink a device.</string>
 
     <string name="detail_label_status">Status</string>
     <string name="detail_label_device">Device</string>
@@ -86,7 +86,7 @@
     <string name="scan_terminal_line">Terminal: %1$s · %2$s</string>
     <string name="scan_manual_entry">Enter serial number manually</string>
     <string name="scan_rationale">The camera is only used to read the serial number code.</string>
-    <string name="scan_placeholder_note">Phase 1: placeholder. Camera and detection follow in phase 4.</string>
+    <string name="scan_placeholder_note">Place the code inside the frame — detection runs automatically.</string>
     <string name="scan_simulate_hit">Simulate hit</string>
     <string name="cd_torch">Torch</string>
 
@@ -257,4 +257,30 @@
     <string name="detail_label_activation_code">Activation code</string>
 
     <string name="settings_show_decommissioned">Show decommissioned terminals</string>
+
+    <string name="scan_permission_allow">Allow camera</string>
+    <string name="scan_permission_denied">Without the camera the serial number can be entered by hand.</string>
+    <string name="scan_open_settings">Allow in settings</string>
+    <string name="scan_no_camera">This device has no camera.</string>
+    <string name="scan_invalid_title">Not a valid serial number code</string>
+    <string name="scan_invalid_text">Read: %1$s</string>
+    <string name="scan_manual_short">Enter manually</string>
+    <string name="scan_detected_announce">Serial number detected: %1$s</string>
+    <string name="scan_confirm_error_hint">Scan again or enter the serial number manually.</string>
+    <string name="link_working">Linking…</string>
+    <string name="link_step_unlink">Unlink old device</string>
+    <string name="link_step_link">Link new device</string>
+    <string name="link_error_unlink_title">The old device could not be unlinked</string>
+    <string name="link_error_unlink_text">Nothing was changed.</string>
+    <string name="link_error_partial_title">Old device unlinked — the new device could not be linked</string>
+    <string name="link_error_partial_text">The terminal now has no device.</string>
+    <string name="link_relink_old">Re-link the old device</string>
+    <string name="link_to_list">To the list</string>
+    <string name="link_network_unclear">No connection. The terminal state is unclear — please refresh.</string>
+    <string name="link_check_state">Check state</string>
+    <string name="result_unconfirmed_text">wallee confirmed the link but does not show a serial number yet. Please refresh in 10 seconds.</string>
+    <string name="result_unconfirmed_unlink_text">wallee confirmed the unlink but still shows a serial number. Please refresh in 10 seconds.</string>
+    <string name="result_refresh">Refresh</string>
+    <string name="cd_torch_on">Turn torch on</string>
+    <string name="cd_torch_off">Turn torch off</string>
 </resources>

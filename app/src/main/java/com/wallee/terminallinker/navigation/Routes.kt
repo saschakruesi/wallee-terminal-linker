@@ -25,6 +25,8 @@ data class ResultRoute(
     val outcome: ResultOutcome,
     val serial: String? = null,
     val previousSerial: String? = null,
+    /** False when the reload after the 204 did not show the expected link state (docs/03 §Ergebnis). */
+    val confirmed: Boolean = true,
 )
 
 @Serializable

@@ -120,4 +120,17 @@ class TerminalRepositoryTest {
         assertEquals("/api/v2.0/payment/terminals/search?limit=100&offset=0", server.takeRequest().path)
         assertEquals(1, repo.state(7).value.terminals.size)
     }
+
+    @Test
+    fun `link and unlink post to the right paths with the space header`() = runBlocking {
+        server.enqueue(MockResponse().setResponseCode(204))
+        server.enqueue(MockResponse().setResponseCode(204))
+        repo.link(7, 1, "2290012345")
+        repo.unlink(7, 1)
+        val link = server.takeRequest()
+        assertEquals("POST", link.method)
+        assertEquals("/api/v2.0/payment/terminals/1/link?serialNumber=2290012345", link.path)
+        assertEquals("7", link.getHeader("space"))
+        assertEquals("/api/v2.0/payment/terminals/1/unlink", server.takeRequest().path)
+    }
 }

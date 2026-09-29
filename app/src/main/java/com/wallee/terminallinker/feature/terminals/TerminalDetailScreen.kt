@@ -56,7 +56,7 @@ fun TerminalDetailScreen(
     onBack: () -> Unit,
     onLink: () -> Unit,
     onReplace: () -> Unit,
-    onUnlinked: (serial: String?) -> Unit,
+    onUnlinked: (serial: String?, confirmed: Boolean) -> Unit,
     viewModel: TerminalDetailViewModel = appViewModel { TerminalDetailViewModel(it, terminalId) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -70,6 +70,7 @@ fun TerminalDetailScreen(
     val language = context.resources.configuration.locales[0]?.language ?: "de"
 
     LaunchedEffect(Unit) { viewModel.toasts.collect { toasts.showToast(it.message, it.kind) } }
+    LaunchedEffect(Unit) { viewModel.unlinked.collect { onUnlinked(it.previousSerial, it.confirmed) } }
 
     WScreen(
         header = { WHeader(leading = { WBackButton(onClick = onBack) }) },
@@ -223,7 +224,7 @@ fun TerminalDetailScreen(
             destructive = true,
             onConfirm = {
                 confirmUnlink = false
-                onUnlinked(terminal.deviceSerialNumber)
+                viewModel.unlink()
             },
             onDismiss = { confirmUnlink = false },
         )

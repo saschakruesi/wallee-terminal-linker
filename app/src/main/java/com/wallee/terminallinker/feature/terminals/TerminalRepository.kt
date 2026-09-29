@@ -77,6 +77,20 @@ class TerminalRepository(private val client: WalleeClient, private val clock: ()
         client.raw("POST", "/payment/terminals/$terminalId/trigger-configuration", spaceId = spaceId)
     }
 
+    /** `POST /payment/terminals/{id}/link?serialNumber=…` → 204. The caller reloads with [get] afterwards (docs/02 §3.3). */
+    suspend fun link(spaceId: Long, terminalId: Long, serialNumber: String) {
+        client.postNoContent(
+            "/payment/terminals/$terminalId/link",
+            query = listOf("serialNumber" to serialNumber),
+            spaceId = spaceId,
+        )
+    }
+
+    /** `POST /payment/terminals/{id}/unlink` → 204. */
+    suspend fun unlink(spaceId: Long, terminalId: Long) {
+        client.postNoContent("/payment/terminals/$terminalId/unlink", spaceId = spaceId)
+    }
+
     /** `PATCH /payment/terminals/{id}` with `name` and the current `version` (optimistic locking, 409 → reload). */
     suspend fun rename(spaceId: Long, terminal: PaymentTerminal, newName: String): PaymentTerminal {
         val body = JsonObject(

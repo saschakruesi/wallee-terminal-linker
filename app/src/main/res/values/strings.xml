@@ -66,7 +66,7 @@
     <string name="terminals_empty">In diesem Space sind keine Terminals angelegt. Terminals werden im wallee-Backend unter Terminals → Payment Terminals erstellt.</string>
     <string name="terminals_no_match">Kein Terminal passt zu ‹%1$s›</string>
     <string name="terminals_clear_search">Suche leeren</string>
-    <string name="terminals_placeholder_note">Linken, Ersetzen und Trennen folgen mit dem Scanner in Phase 4.</string>
+    <string name="terminals_placeholder_note">Terminal antippen, um ein Gerät zu linken, zu ersetzen oder zu trennen.</string>
 
     <!-- Terminal-Detail -->
     <string name="detail_label_status">Status</string>
@@ -94,7 +94,7 @@
     <string name="scan_terminal_line">Terminal: %1$s · %2$s</string>
     <string name="scan_manual_entry">Seriennummer manuell eingeben</string>
     <string name="scan_rationale">Die Kamera wird nur zum Lesen des Seriennummern-Codes verwendet.</string>
-    <string name="scan_placeholder_note">Phase 1: Platzhalter. Kamera und Erkennung folgen in Phase 4.</string>
+    <string name="scan_placeholder_note">Code im Sucher platzieren — die Erkennung läuft automatisch.</string>
     <string name="scan_simulate_hit">Treffer simulieren</string>
     <string name="cd_torch">Taschenlampe</string>
 
@@ -277,4 +277,31 @@
 
     <!-- Einstellungen (Phase 3) -->
     <string name="settings_show_decommissioned">Stillgelegte Terminals anzeigen</string>
+
+    <!-- Scanner & Link-Flow (Phase 4) -->
+    <string name="scan_permission_allow">Kamera erlauben</string>
+    <string name="scan_permission_denied">Ohne Kamera kann die Seriennummer von Hand eingegeben werden.</string>
+    <string name="scan_open_settings">In den Einstellungen erlauben</string>
+    <string name="scan_no_camera">Dieses Gerät hat keine Kamera.</string>
+    <string name="scan_invalid_title">Kein gültiger Seriennummern-Code</string>
+    <string name="scan_invalid_text">Gelesen: %1$s</string>
+    <string name="scan_manual_short">Manuell eingeben</string>
+    <string name="scan_detected_announce">Seriennummer erkannt: %1$s</string>
+    <string name="scan_confirm_error_hint">Erneut scannen oder Seriennummer manuell eingeben.</string>
+    <string name="link_working">Verknüpfen…</string>
+    <string name="link_step_unlink">Altes Gerät trennen</string>
+    <string name="link_step_link">Neues Gerät verknüpfen</string>
+    <string name="link_error_unlink_title">Altes Gerät konnte nicht getrennt werden</string>
+    <string name="link_error_unlink_text">Es wurde nichts verändert.</string>
+    <string name="link_error_partial_title">Altes Gerät getrennt — neues Gerät konnte nicht verknüpft werden</string>
+    <string name="link_error_partial_text">Das Terminal ist jetzt ohne Gerät.</string>
+    <string name="link_relink_old">Altes Gerät wieder verknüpfen</string>
+    <string name="link_to_list">Zur Liste</string>
+    <string name="link_network_unclear">Keine Verbindung. Der Zustand des Terminals ist unklar — bitte aktualisieren.</string>
+    <string name="link_check_state">Zustand prüfen</string>
+    <string name="result_unconfirmed_text">wallee hat die Verknüpfung bestätigt, zeigt aber noch keine Seriennummer. Bitte in 10 Sekunden aktualisieren.</string>
+    <string name="result_unconfirmed_unlink_text">wallee hat die Trennung bestätigt, zeigt aber noch eine Seriennummer. Bitte in 10 Sekunden aktualisieren.</string>
+    <string name="result_refresh">Aktualisieren</string>
+    <string name="cd_torch_on">Taschenlampe einschalten</string>
+    <string name="cd_torch_off">Taschenlampe ausschalten</string>
 </resources>
