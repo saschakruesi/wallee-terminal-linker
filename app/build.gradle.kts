@@ -53,8 +53,15 @@ android {
     buildTypes {
         debug {
             versionNameSuffix = "-debug"
+            // Optional local mock for UI checks: TL_BASE_URL=http://10.0.2.2:8787 ./gradlew assembleDebug
+            buildConfigField(
+                "String",
+                "WALLEE_BASE_URL",
+                "\"" + (System.getenv("TL_BASE_URL")?.takeIf { it.isNotBlank() } ?: "https://app-wallee.com") + "\"",
+            )
         }
         release {
+            buildConfigField("String", "WALLEE_BASE_URL", "\"https://app-wallee.com\"")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
