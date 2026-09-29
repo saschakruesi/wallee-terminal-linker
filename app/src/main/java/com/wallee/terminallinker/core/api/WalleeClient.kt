@@ -9,6 +9,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -37,6 +38,8 @@ class WalleeClient(
     private val json: Json = WalleeJson,
     private val clock: () -> Long = System::currentTimeMillis,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val retryDelaysMillis: List<Long> = DEFAULT_RETRY_DELAYS_MILLIS,
+    private val sleep: suspend (Long) -> Unit = { delay(it) },
 ) {
     /** Mutable so the setup flow can switch to milliseconds after a 401 (docs/02 §1). */
     @Volatile
@@ -64,6 +67,40 @@ class WalleeClient(
     ): ApiResponse = withContext(ioDispatcher) {
         // Everything, including reading the body, runs off the main thread (docs/02 §2).
         val credentials = credentialsProvider() ?: throw MissingCredentialsException()
+        val retries = if (method.equals("GET", ignoreCase = true)) retryDelaysMillis else emptyList()
+        sendWithRetry(retries, credentials, method, path, query, expand, spaceId, jsonBody)
+    }
+
+    private suspend fun sendWithRetry(
+        retries: List<Long>,
+        credentials: Credentials,
+        method: String,
+        path: String,
+        query: List<Pair<String, String>>,
+        expand: List<String>,
+        spaceId: Long?,
+        jsonBody: String?,
+    ): ApiResponse {
+        var attempt = 0
+        while (true) {
+            try {
+                return send(credentials, method, path, query, expand, spaceId, jsonBody)
+            } catch (e: WalleeApiException) {
+                if (e.status != 429 || attempt >= retries.size) throw e
+                sleep(retries[attempt++])
+            }
+        }
+    }
+
+    private suspend fun send(
+        credentials: Credentials,
+        method: String,
+        path: String,
+        query: List<Pair<String, String>>,
+        expand: List<String>,
+        spaceId: Long?,
+        jsonBody: String?,
+    ): ApiResponse {
         val url = buildUrl(path, query, expand)
         val requestPath = url.encodedPath + (url.encodedQuery?.let { "?$it" } ?: "")
         val token = Jwt.create(
@@ -90,7 +127,7 @@ class WalleeClient(
         } catch (e: IOException) {
             throw WalleeNetworkException(e)
         }
-        response.use {
+        return response.use {
             val body = it.body.string()
             if (!it.isSuccessful) throw toApiException(it.code, body)
             ApiResponse(it.code, body)
@@ -136,6 +173,7 @@ class WalleeClient(
     companion object {
         const val DEFAULT_BASE_URL = "https://app-wallee.com"
         const val API_PREFIX = "/api/v2.0"
+        val DEFAULT_RETRY_DELAYS_MILLIS: List<Long> = listOf(2_000, 4_000, 8_000)
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
         private val EMPTY_BODY = ByteArray(0).toRequestBody(null)
 

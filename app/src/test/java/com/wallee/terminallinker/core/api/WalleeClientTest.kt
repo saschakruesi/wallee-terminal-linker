@@ -124,4 +124,45 @@ class WalleeClientTest {
         assertThrows(MissingCredentialsException::class.java) { runBlocking { noCreds.get<Space>("/spaces/1") } }
         assertEquals(0, server.requestCount)
     }
+
+    @Test
+    fun `429 on GET is retried with backoff and succeeds`() = runBlocking {
+        val delays = mutableListOf<Long>()
+        val retrying = WalleeClient(
+            credentialsProvider = { Credentials(12345, key) },
+            baseUrl = server.url("/"),
+            retryDelaysMillis = listOf(2_000, 4_000, 8_000),
+            sleep = { delays += it },
+        )
+        repeat(2) { server.enqueue(MockResponse().setResponseCode(429).setBody("""{"message":"slow down"}""")) }
+        server.enqueue(MockResponse().setResponseCode(200).setBody("""{"data":[],"hasMore":false}"""))
+        retrying.get<ListResponse<Space>>("/spaces")
+        assertEquals(3, server.requestCount)
+        assertEquals(listOf(2_000L, 4_000L), delays)
+    }
+
+    @Test
+    fun `429 gives up after the last backoff and is never retried for POST`() = runBlocking {
+        val delays = mutableListOf<Long>()
+        val retrying = WalleeClient(
+            credentialsProvider = { Credentials(12345, key) },
+            baseUrl = server.url("/"),
+            retryDelaysMillis = listOf(2_000, 4_000, 8_000),
+            sleep = { delays += it },
+        )
+        repeat(4) { server.enqueue(MockResponse().setResponseCode(429)) }
+        val e = assertThrows(WalleeApiException::class.java) {
+            runBlocking { retrying.get<ListResponse<Space>>("/spaces") }
+        }
+        assertEquals(429, e.status)
+        assertEquals(4, server.requestCount)
+        assertEquals(listOf(2_000L, 4_000L, 8_000L), delays)
+
+        server.enqueue(MockResponse().setResponseCode(429))
+        assertThrows(WalleeApiException::class.java) {
+            runBlocking { retrying.postNoContent("/payment/terminals/1/link", listOf("serialNumber" to "X")) }
+        }
+        assertEquals(5, server.requestCount)
+        assertEquals(3, delays.size)
+    }
 }
