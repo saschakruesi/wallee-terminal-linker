@@ -44,6 +44,35 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Verify keystore and passwords
+        env:
+          TL_KEYSTORE_BASE64: ${{ secrets.TL_KEYSTORE_BASE64 }}
+          TL_KEYSTORE_PASSWORD: ${{ secrets.TL_KEYSTORE_PASSWORD }}
+          TL_KEY_ALIAS: ${{ secrets.TL_KEY_ALIAS }}
+          TL_KEY_PASSWORD: ${{ secrets.TL_KEY_PASSWORD }}
+        run: |
+          # Fail here with a precise reason instead of deep inside Gradle's packageRelease.
+          set +e
+          printf '%s' "$TL_KEYSTORE_BASE64" | base64 -d > /tmp/release.jks 2>/tmp/b64.err
+          if [ $? -ne 0 ] || [ ! -s /tmp/release.jks ]; then
+            echo "::error::TL_KEYSTORE_BASE64 is not valid base64 (re-run: base64 -i terminal-linker.jks | gh secret set TL_KEYSTORE_BASE64)"; exit 1
+          fi
+          echo "keystore: $(wc -c < /tmp/release.jks) bytes"
+          store_pw="$(printf '%s' "$TL_KEYSTORE_PASSWORD" | tr -d '\r\n')"
+          key_pw="$(printf '%s' "$TL_KEY_PASSWORD" | tr -d '\r\n')"
+          alias="$(printf '%s' "$TL_KEY_ALIAS" | tr -d '\r\n')"
+          if ! keytool -list -keystore /tmp/release.jks -storepass "$store_pw" > /tmp/list.txt 2>&1; then
+            echo "::error::TL_KEYSTORE_PASSWORD does not open the keystore (keytool: $(tail -1 /tmp/list.txt))"; exit 1
+          fi
+          if ! keytool -list -keystore /tmp/release.jks -storepass "$store_pw" -alias "$alias" > /dev/null 2>&1; then
+            echo "::error::TL_KEY_ALIAS '$alias' not found in the keystore; entries: $(grep -i 'PrivateKeyEntry' /tmp/list.txt | cut -d, -f1 | tr '\n' ' ')"; exit 1
+          fi
+          if ! keytool -exportcert -rfc -keystore /tmp/release.jks -storepass "$store_pw" -keypass "$key_pw" -alias "$alias" > /dev/null 2>/tmp/key.err; then
+            echo "::error::TL_KEY_PASSWORD does not unlock the key (keytool: $(tail -1 /tmp/key.err))"; exit 1
+          fi
+          rm -f /tmp/release.jks /tmp/list.txt
+          echo "Keystore, alias and passwords verified."
+
       - name: Unit tests and lint
         run: ./gradlew ktlintCheck test --no-daemon
 

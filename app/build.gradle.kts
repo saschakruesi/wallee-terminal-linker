@@ -17,9 +17,13 @@ val keystoreBase64: String? = System.getenv("TL_KEYSTORE_BASE64")?.takeIf { it.i
 val releaseKeystore: File? = keystoreBase64?.let { encoded ->
     layout.buildDirectory.file("signing/release.jks").get().asFile.apply {
         parentFile.mkdirs()
-        writeBytes(Base64.getDecoder().decode(encoded))
+        // MIME decoder: tolerates line breaks from `base64` implementations that wrap at 76 characters.
+        writeBytes(Base64.getMimeDecoder().decode(encoded))
     }
 }
+
+/** Secrets pasted interactively often carry a trailing newline; only that is stripped, never inner spaces. */
+fun secret(name: String): String? = System.getenv(name)?.trimEnd('\n', '\r')?.takeIf { it.isNotEmpty() }
 if (releaseKeystore == null) {
     logger.warn("TL_KEYSTORE_BASE64 not set: release build will be unsigned/debug-signed (local test only).")
 }
@@ -48,9 +52,9 @@ android {
         if (releaseKeystore != null) {
             create("release") {
                 storeFile = releaseKeystore
-                storePassword = System.getenv("TL_KEYSTORE_PASSWORD")
-                keyAlias = System.getenv("TL_KEY_ALIAS")
-                keyPassword = System.getenv("TL_KEY_PASSWORD")
+                storePassword = secret("TL_KEYSTORE_PASSWORD")
+                keyAlias = secret("TL_KEY_ALIAS")
+                keyPassword = secret("TL_KEY_PASSWORD")
             }
         }
     }
