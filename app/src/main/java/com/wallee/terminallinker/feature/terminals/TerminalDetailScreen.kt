@@ -106,7 +106,13 @@ fun TerminalDetailScreen(
                 terminal == null -> {
                     Text(text = state.error ?: stringResource(R.string.detail_not_found), style = WalleeTextStyles.body)
                     Spacer(Modifier.height(WalleeSpacing.S2))
-                    WSecondaryButton(text = stringResource(R.string.action_back), onClick = onBack)
+                    Row {
+                        if (state.error != null) {
+                            WSecondaryButton(text = stringResource(R.string.action_retry), onClick = viewModel::reload)
+                            Spacer(Modifier.padding(WalleeSpacing.S1))
+                        }
+                        WSecondaryButton(text = stringResource(R.string.action_back), onClick = onBack)
+                    }
                 }
 
                 else -> {

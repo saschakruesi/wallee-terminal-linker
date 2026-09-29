@@ -66,7 +66,7 @@
     <string name="terminals_empty">In diesem Space sind keine Terminals angelegt. Terminals werden im wallee-Backend unter Terminals → Payment Terminals erstellt.</string>
     <string name="terminals_no_match">Kein Terminal passt zu ‹%1$s›</string>
     <string name="terminals_clear_search">Suche leeren</string>
-    <string name="terminals_placeholder_note">Terminal antippen, um ein Gerät zu linken, zu ersetzen oder zu trennen.</string>
+    <string name="terminals_placeholder_note">Terminal antippen, um ein Gerät zu linken, zu ersetzen oder zu trennen. Ungelinktes Terminal lange drücken, um direkt zu scannen.</string>
 
     <!-- Terminal-Detail -->
     <string name="detail_label_status">Status</string>
@@ -115,7 +115,6 @@
     <string name="settings_section_about">Über</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_styleguide">Styleguide (Debug)</string>
-    <string name="settings_placeholder_note">Phase 1: Platzhalter. Inhalte folgen in Phase 2 und 5.</string>
 
     <!-- Toast -->
     <string name="toast_placeholder_success">Aktualisiert</string>
@@ -304,4 +303,46 @@
     <string name="result_refresh">Aktualisieren</string>
     <string name="cd_torch_on">Taschenlampe einschalten</string>
     <string name="cd_torch_off">Taschenlampe ausschalten</string>
+    <!-- Phase 5: Einstellungen komplett, Update-Hinweis, Schnellaktion, Offline -->
+    <string name="settings_spaces_hint">Spaces aus wallee und manuell erfasste. Entfernen wirkt nur in der App, nie in wallee.</string>
+    <string name="settings_space_source_auto">aus wallee</string>
+    <string name="settings_space_source_manual">manuell erfasst</string>
+    <string name="settings_no_spaces">Keine Spaces vorhanden.</string>
+    <string name="settings_removed_spaces">Entfernte Spaces</string>
+    <string name="settings_space_restore">Wiederherstellen</string>
+    <string name="settings_remove_space_title">Space entfernen?</string>
+    <string name="settings_remove_space_text">«%1$s» (%2$s) wird aus der App entfernt. Der Space bleibt in wallee bestehen; ein Space aus wallee kann in den Einstellungen wiederhergestellt werden.</string>
+    <string name="settings_language">Sprache</string>
+    <string name="settings_language_system">System</string>
+    <string name="settings_language_de">Deutsch</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_check_updates">Nach Updates suchen</string>
+    <string name="settings_update_checking">Wird geprüft …</string>
+    <string name="settings_update_available">Version %1$s verfügbar – antippen zum Öffnen</string>
+    <string name="settings_update_none">Aktuellste Version installiert</string>
+    <string name="settings_update_failed">Prüfung nicht möglich – keine Verbindung zu GitHub</string>
+    <string name="settings_update_last_checked">Zuletzt geprüft: %1$s</string>
+    <string name="settings_release_page">Release-Seite öffnen</string>
+    <string name="settings_licenses">Lizenzen</string>
+    <string name="settings_wipe">Alle lokalen Daten löschen</string>
+    <string name="settings_wipe_title">Alle lokalen Daten löschen?</string>
+    <string name="settings_wipe_text">Zugangsdaten, Spaces, Einstellungen und die zwischengespeicherte Terminalliste werden von diesem Gerät gelöscht. In wallee ändert sich nichts. Danach startet die App mit der Einrichtung.</string>
+    <string name="settings_wipe_confirm">Löschen</string>
+    <string name="licenses_title_2">Lizenzen</string>
+    <string name="licenses_intro">Diese App verwendet folgende Schriften und Bibliotheken. Antippen öffnet die jeweilige Lizenz.</string>
+    <string name="licenses_apache">Apache License 2.0</string>
+    <string name="licenses_roboto">Roboto (Schrift)</string>
+    <string name="licenses_mlkit">Google ML Kit Barcode Scanning</string>
+    <string name="licenses_mlkit_terms">ML Kit Terms of Service</string>
+    <string name="licenses_androidx">AndroidX / Jetpack Compose, CameraX</string>
+    <string name="licenses_okhttp">OkHttp (Square)</string>
+    <string name="licenses_kotlinx">Kotlin, kotlinx.coroutines, kotlinx.serialization</string>
+    <string name="licenses_full_list_note">Die vollständige Liste aller Open-Source-Komponenten wird mit dem Release erzeugt.</string>
+    <string name="update_banner">Version %1$s verfügbar</string>
+    <string name="update_banner_open">Ansehen</string>
+    <string name="cd_dismiss_update">Hinweis ausblenden</string>
+    <string name="terminals_quick_link_hint">Ungelinktes Terminal lange drücken, um direkt zu scannen.</string>
+    <string name="cd_quick_link">Gerät direkt linken</string>
+    <string name="error_offline">Offline – keine Netzverbindung (Flugmodus?). Verbindung herstellen und erneut versuchen.</string>
+    <string name="detail_offline_cache">Offline – Angaben aus dem Zwischenspeicher, evtl. nicht aktuell.</string>
 </resources>

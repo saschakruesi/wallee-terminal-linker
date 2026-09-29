@@ -60,7 +60,7 @@
     <string name="terminals_empty">There are no terminals in this space. Terminals are created in the wallee backend under Terminals → Payment Terminals.</string>
     <string name="terminals_no_match">No terminal matches ‹%1$s›</string>
     <string name="terminals_clear_search">Clear search</string>
-    <string name="terminals_placeholder_note">Tap a terminal to link, replace or unlink a device.</string>
+    <string name="terminals_placeholder_note">Tap a terminal to link, replace or unlink a device. Long-press an unlinked terminal to scan right away.</string>
 
     <string name="detail_label_status">Status</string>
     <string name="detail_label_device">Device</string>
@@ -105,7 +105,6 @@
     <string name="settings_section_about">About</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_styleguide">Style guide (debug)</string>
-    <string name="settings_placeholder_note">Phase 1: placeholder. Content follows in phases 2 and 5.</string>
 
     <string name="toast_placeholder_success">Updated</string>
     <string name="toast_placeholder_error">No connection to app-wallee.com</string>
@@ -283,4 +282,46 @@
     <string name="result_refresh">Refresh</string>
     <string name="cd_torch_on">Turn torch on</string>
     <string name="cd_torch_off">Turn torch off</string>
+    <!-- Phase 5: complete settings, update hint, quick action, offline -->
+    <string name="settings_spaces_hint">Spaces from wallee and manually added ones. Removing only affects this app, never wallee.</string>
+    <string name="settings_space_source_auto">from wallee</string>
+    <string name="settings_space_source_manual">added manually</string>
+    <string name="settings_no_spaces">No spaces available.</string>
+    <string name="settings_removed_spaces">Removed spaces</string>
+    <string name="settings_space_restore">Restore</string>
+    <string name="settings_remove_space_title">Remove space?</string>
+    <string name="settings_remove_space_text">"%1$s" (%2$s) will be removed from the app. The space stays in wallee; a space from wallee can be restored in the settings.</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">System</string>
+    <string name="settings_language_de">Deutsch</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_check_updates">Check for updates</string>
+    <string name="settings_update_checking">Checking …</string>
+    <string name="settings_update_available">Version %1$s available – tap to open</string>
+    <string name="settings_update_none">Latest version installed</string>
+    <string name="settings_update_failed">Check failed – no connection to GitHub</string>
+    <string name="settings_update_last_checked">Last checked: %1$s</string>
+    <string name="settings_release_page">Open release page</string>
+    <string name="settings_licenses">Licenses</string>
+    <string name="settings_wipe">Delete all local data</string>
+    <string name="settings_wipe_title">Delete all local data?</string>
+    <string name="settings_wipe_text">Credentials, spaces, settings and the cached terminal list will be deleted from this device. Nothing changes in wallee. The app then restarts with the setup.</string>
+    <string name="settings_wipe_confirm">Delete</string>
+    <string name="licenses_title_2">Licenses</string>
+    <string name="licenses_intro">This app uses the following fonts and libraries. Tap to open the respective license.</string>
+    <string name="licenses_apache">Apache License 2.0</string>
+    <string name="licenses_roboto">Roboto (font)</string>
+    <string name="licenses_mlkit">Google ML Kit Barcode Scanning</string>
+    <string name="licenses_mlkit_terms">ML Kit Terms of Service</string>
+    <string name="licenses_androidx">AndroidX / Jetpack Compose, CameraX</string>
+    <string name="licenses_okhttp">OkHttp (Square)</string>
+    <string name="licenses_kotlinx">Kotlin, kotlinx.coroutines, kotlinx.serialization</string>
+    <string name="licenses_full_list_note">The complete list of all open-source components is generated with the release.</string>
+    <string name="update_banner">Version %1$s available</string>
+    <string name="update_banner_open">View</string>
+    <string name="cd_dismiss_update">Dismiss hint</string>
+    <string name="terminals_quick_link_hint">Long-press an unlinked terminal to scan right away.</string>
+    <string name="cd_quick_link">Link device directly</string>
+    <string name="error_offline">Offline – no network connection (flight mode?). Connect and try again.</string>
+    <string name="detail_offline_cache">Offline – details from the cache, possibly outdated.</string>
 </resources>

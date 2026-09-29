@@ -1,9 +1,11 @@
 package com.wallee.terminallinker.feature.terminals
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wallee.terminallinker.core.api.dto.PaymentTerminal
 import com.wallee.terminallinker.core.api.toUserMessage
+import com.wallee.terminallinker.core.update.UpdateInfo
 import com.wallee.terminallinker.di.AppContainer
 import com.wallee.terminallinker.feature.spaces.SpaceRef
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,11 +34,17 @@ data class TerminalsUiState(
     val rows: List<PaymentTerminal> = emptyList(),
 )
 
-/** Terminal list of the active space: loads on space change, filters and sorts locally (docs/03 §Terminalliste). */
+/**
+ * Terminal list of the active space: loads on space change, filters and sorts locally (docs/03 §Terminalliste).
+ * The search text lives in the [SavedStateHandle] so it survives process death; filter and sort are in DataStore.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
-class TerminalsViewModel(private val container: AppContainer) : ViewModel() {
+class TerminalsViewModel(
+    private val container: AppContainer,
+    private val savedState: SavedStateHandle = SavedStateHandle(),
+) : ViewModel() {
     private val repo = container.terminalRepository
-    private val query = MutableStateFlow("")
+    private val query = savedState.getStateFlow(KEY_QUERY, "")
     private val activeSpace = container.spaceRepository.activeSpace.distinctUntilChanged()
 
     private val repoState = activeSpace.flatMapLatest { space ->
@@ -73,7 +81,16 @@ class TerminalsViewModel(private val container: AppContainer) : ViewModel() {
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TerminalsUiState())
 
+    /** Newer release on GitHub, unless the user dismissed exactly that version (docs/01 §In-App-Update-Hinweis). */
+    val availableUpdate: StateFlow<UpdateInfo?> = combine(
+        container.uiPrefs.availableUpdate,
+        container.uiPrefs.dismissedUpdateVersion,
+    ) { update, dismissed -> update?.takeIf { it.version != dismissed } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
     init {
+        // Best-effort update check, at most once a day (the checker enforces the interval).
+        viewModelScope.launch { runCatching { container.updateChecker.check() } }
         // Load once per space when nothing is cached yet; pull-to-refresh reloads explicitly.
         viewModelScope.launch {
             activeSpace.collect { space ->
@@ -85,7 +102,12 @@ class TerminalsViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun onQueryChange(value: String) {
-        query.value = value
+        savedState[KEY_QUERY] = value
+    }
+
+    fun dismissUpdate() {
+        val version = availableUpdate.value?.version ?: return
+        viewModelScope.launch { container.uiPrefs.setDismissedUpdateVersion(version) }
     }
 
     fun clearQuery() = onQueryChange("")
@@ -101,5 +123,9 @@ class TerminalsViewModel(private val container: AppContainer) : ViewModel() {
     fun refresh() {
         val space = state.value.space ?: return
         viewModelScope.launch { runCatching { repo.refreshAll(space.id) } }
+    }
+
+    private companion object {
+        const val KEY_QUERY = "query"
     }
 }

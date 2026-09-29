@@ -1,5 +1,6 @@
 package com.wallee.terminallinker
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -13,6 +14,11 @@ import com.wallee.terminallinker.navigation.SetupRoute
 import com.wallee.terminallinker.navigation.TerminalsRoute
 
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        // Language from the settings (docs/03 §Einstellungen); SYSTEM leaves the context untouched.
+        super.attachBaseContext((newBase.applicationContext as TerminalLinkerApp).container.localePrefs.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Light status bar with dark icons, white navigation bar — always, regardless of system theme.
         enableEdgeToEdge(

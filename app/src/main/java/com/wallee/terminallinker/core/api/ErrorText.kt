@@ -1,6 +1,8 @@
 package com.wallee.terminallinker.core.api
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
 import com.wallee.terminallinker.BuildConfig
 import com.wallee.terminallinker.R
@@ -25,7 +27,8 @@ fun Throwable.toUserMessage(context: Context): String = when (this) {
             if (message.startsWith("HTTP")) "" else " – $message"
     }
 
-    is WalleeNetworkException -> context.getString(R.string.error_network)
+    is WalleeNetworkException ->
+        if (context.isOnline()) context.getString(R.string.error_network) else context.getString(R.string.error_offline)
 
     is MissingCredentialsException -> context.getString(R.string.error_no_credentials)
 
@@ -39,4 +42,11 @@ fun Throwable.toUserMessage(context: Context): String = when (this) {
         if (BuildConfig.DEBUG) Log.w("wallee-error", "unmapped ${this.javaClass.name}: $message", this)
         context.getString(R.string.error_unknown) + " (" + this.javaClass.simpleName + ")"
     }
+}
+
+/** True when the device currently has a network with internet capability (flight mode → false). */
+fun Context.isOnline(): Boolean {
+    val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return true
+    val capabilities = manager.getNetworkCapabilities(manager.activeNetwork) ?: return false
+    return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }

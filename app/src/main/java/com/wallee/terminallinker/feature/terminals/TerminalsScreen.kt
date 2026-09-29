@@ -1,6 +1,9 @@
 package com.wallee.terminallinker.feature.terminals
 
+import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,9 +20,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wallee.terminallinker.R
 import com.wallee.terminallinker.core.api.dto.PaymentTerminal
@@ -33,6 +41,7 @@ import com.wallee.terminallinker.core.ui.components.WBadge
 import com.wallee.terminallinker.core.ui.components.WBadgeKind
 import com.wallee.terminallinker.core.ui.components.WBottomSheet
 import com.wallee.terminallinker.core.ui.components.WHeader
+import com.wallee.terminallinker.core.ui.components.WIconButton
 import com.wallee.terminallinker.core.ui.components.WInput
 import com.wallee.terminallinker.core.ui.components.WListRow
 import com.wallee.terminallinker.core.ui.components.WPrimaryButton
@@ -42,7 +51,9 @@ import com.wallee.terminallinker.core.ui.components.WSecondaryButton
 import com.wallee.terminallinker.core.ui.components.WSegment
 import com.wallee.terminallinker.core.ui.components.WSegmented
 import com.wallee.terminallinker.core.ui.components.WTextButton
+import com.wallee.terminallinker.core.update.UpdateInfo
 import com.wallee.terminallinker.di.appViewModel
+import com.wallee.terminallinker.di.appViewModelWithState
 import com.wallee.terminallinker.feature.spaces.AddSpaceDialog
 import com.wallee.terminallinker.feature.spaces.SpaceSheet
 import com.wallee.terminallinker.feature.spaces.SpacesViewModel
@@ -51,12 +62,17 @@ import com.wallee.terminallinker.feature.spaces.SpacesViewModel
 @Composable
 fun TerminalsScreen(
     onOpenTerminal: (Long) -> Unit,
+    onQuickLink: (Long) -> Unit,
     onOpenSettings: () -> Unit,
     onScanSpaces: () -> Unit,
     spacesViewModel: SpacesViewModel = appViewModel { SpacesViewModel(it) },
-    viewModel: TerminalsViewModel = appViewModel { TerminalsViewModel(it) },
+    viewModel: TerminalsViewModel =
+        appViewModelWithState { container, handle -> TerminalsViewModel(container, handle) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val update by viewModel.availableUpdate.collectAsStateWithLifecycle()
+    val haptics = LocalHapticFeedback.current
+    val context = LocalContext.current
     var sheetOpen by rememberSaveable { mutableStateOf(false) }
     var sortOpen by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) { spacesViewModel.consumeScannedSpaceIds() }
@@ -73,6 +89,17 @@ fun TerminalsScreen(
             )
         },
     ) {
+        update?.let { info ->
+            UpdateBanner(
+                info = info,
+                onOpen = {
+                    runCatching {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, info.url.toUri()))
+                    }
+                },
+                onDismiss = viewModel::dismissUpdate,
+            )
+        }
         Column(modifier = Modifier.padding(horizontal = WalleeSpacing.Side)) {
             Spacer(Modifier.height(WalleeSpacing.S3))
             Headline(line1 = stringResource(R.string.terminals_title_1), line2 = spaceName)
@@ -91,7 +118,7 @@ fun TerminalsScreen(
                     leadingIconRes = R.drawable.ic_search,
                     trailing = if (state.query.isNotEmpty()) {
                         {
-                            com.wallee.terminallinker.core.ui.components.WIconButton(
+                            WIconButton(
                                 iconRes = R.drawable.ic_close,
                                 contentDescription = stringResource(R.string.cd_clear_search),
                                 onClick = viewModel::clearQuery,
@@ -133,7 +160,18 @@ fun TerminalsScreen(
                         item { ErrorPanel(state.error!!, onRetry = viewModel::refresh) }
                     }
                     items(state.rows, key = { it.id }) { terminal ->
-                        TerminalRow(terminal, onClick = { onOpenTerminal(terminal.id) })
+                        TerminalRow(
+                            terminal,
+                            onClick = { onOpenTerminal(terminal.id) },
+                            onQuickLink = if (terminal.canQuickLink) {
+                                {
+                                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    onQuickLink(terminal.id)
+                                }
+                            } else {
+                                null
+                            },
+                        )
                     }
                     item { ListFooter(state, onClearQuery = viewModel::clearQuery) }
                 }
@@ -162,8 +200,12 @@ fun TerminalsScreen(
     AddSpaceDialog(viewModel = spacesViewModel, onScanSpaces = onScanSpaces)
 }
 
+/** Unlinked, active terminals get the long-press quick action (docs/03 §Terminalliste, Schnellaktion). */
+private val PaymentTerminal.canQuickLink: Boolean
+    get() = !linked && !isDecommissioned && state == "ACTIVE"
+
 @Composable
-private fun TerminalRow(terminal: PaymentTerminal, onClick: () -> Unit) {
+private fun TerminalRow(terminal: PaymentTerminal, onClick: () -> Unit, onQuickLink: (() -> Unit)?) {
     val serial = terminal.deviceSerialNumber?.let { stringResource(R.string.terminal_serial_line, it) }
     WListRow(
         title = terminal.displayName,
@@ -176,7 +218,35 @@ private fun TerminalRow(terminal: PaymentTerminal, onClick: () -> Unit) {
         },
         badge = { WBadge(kind = terminal.badgeKind()) },
         onClick = onClick,
+        onLongClick = onQuickLink,
+        longClickLabel = if (onQuickLink != null) stringResource(R.string.cd_quick_link) else null,
     )
+}
+
+/** Discreet grey strip under the header: "Version x.y available" + view + dismiss (docs/01 §Update-Hinweis). */
+@Composable
+private fun UpdateBanner(info: UpdateInfo, onOpen: () -> Unit, onDismiss: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(WalleeColors.BgSoft)
+            .padding(start = WalleeSpacing.Side, end = 4.dp, top = 2.dp, bottom = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.update_banner, info.version),
+            style = WalleeTextStyles.label,
+            color = WalleeColors.Text,
+            modifier = Modifier.weight(1f),
+        )
+        WTextButton(text = stringResource(R.string.update_banner_open), onClick = onOpen)
+        WIconButton(
+            iconRes = R.drawable.ic_close,
+            contentDescription = stringResource(R.string.cd_dismiss_update),
+            onClick = onDismiss,
+            tint = WalleeColors.TextMuted,
+        )
+    }
 }
 
 @Composable

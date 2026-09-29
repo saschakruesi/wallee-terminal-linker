@@ -32,6 +32,9 @@ data class ResultRoute(
 @Serializable
 object SettingsRoute
 
+@Serializable
+object LicensesRoute
+
 /** Debug-only component reference (docs/04 §Styleguide-Screen). */
 @Serializable
 object StyleguideRoute

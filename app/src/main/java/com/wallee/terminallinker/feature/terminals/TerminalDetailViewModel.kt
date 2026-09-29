@@ -82,6 +82,13 @@ class TerminalDetailViewModel(private val container: AppContainer, private val t
         }
     }
 
+    /** Retry after a failed initial load (offline panel); no toast, unlike [refresh]. */
+    fun reload() {
+        val spaceId = _state.value.spaceId ?: return
+        _state.update { it.copy(loading = true, error = null) }
+        viewModelScope.launch { load(spaceId) }
+    }
+
     fun refresh() = action { spaceId ->
         repo.refreshDevice(spaceId, terminalId).also { fresh -> _state.update { it.copy(terminal = fresh) } }
         toast(container.appContext.getString(R.string.detail_refreshed))

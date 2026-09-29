@@ -1,7 +1,8 @@
 package com.wallee.terminallinker.core.ui.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Column
@@ -33,13 +34,17 @@ import com.wallee.terminallinker.core.ui.WalleeTextStyles
 /**
  * 64 dp list row: title (Medium 15 black), optional second line (13 grey), optional [badge] slot,
  * chevron when tappable. Pressed `#CFF7F4`, hairline below. Leading slot for icons or radio marks.
+ * [onLongClick] adds a long-press action (quick link in the terminal list); [longClickLabel] names it for TalkBack.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WListRow(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
+    longClickLabel: String? = null,
     showChevron: Boolean = onClick != null,
     leading: (@Composable () -> Unit)? = null,
     badge: (@Composable () -> Unit)? = null,
@@ -55,10 +60,12 @@ fun WListRow(
                 .background(if (pressed) WalleeColors.Turquoise20 else Color.Transparent)
                 .then(
                     if (onClick != null) {
-                        Modifier.clickable(
+                        Modifier.combinedClickable(
                             interactionSource = interaction,
                             indication = null,
                             role = Role.Button,
+                            onLongClickLabel = longClickLabel,
+                            onLongClick = onLongClick,
                             onClick = onClick,
                         )
                     } else {

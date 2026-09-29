@@ -14,6 +14,7 @@ import com.wallee.terminallinker.BuildConfig
 import com.wallee.terminallinker.di.appContainer
 import com.wallee.terminallinker.feature.link.ResultScreen
 import com.wallee.terminallinker.feature.scan.ScanScreen
+import com.wallee.terminallinker.feature.settings.LicensesScreen
 import com.wallee.terminallinker.feature.settings.SettingsScreen
 import com.wallee.terminallinker.feature.setup.SetupScreen
 import com.wallee.terminallinker.feature.styleguide.StyleguideScreen
@@ -53,6 +54,12 @@ fun AppNavGraph(startDestination: Any, navController: NavHostController = rememb
         composable<TerminalsRoute> {
             TerminalsScreen(
                 onOpenTerminal = { id -> navController.navigate(TerminalDetailRoute(id)) },
+                onQuickLink = { id ->
+                    // Long-press quick action (docs/03 §Terminalliste): detail below, scanner on top, so back
+                    // from the scanner lands on the detail and the result screen pops to it as usual.
+                    navController.navigate(TerminalDetailRoute(id))
+                    navController.navigate(ScanRoute(mode = ScanMode.LINK, terminalId = id))
+                },
                 onOpenSettings = { navController.navigate(SettingsRoute) },
                 onScanSpaces = { navController.navigate(ScanRoute(mode = ScanMode.CREDENTIALS, spacesOnly = true)) },
             )
@@ -121,12 +128,21 @@ fun AppNavGraph(startDestination: Any, navController: NavHostController = rememb
                 onBack = { navController.popBackStack() },
                 onEditCredentials = { navController.navigate(SetupRoute) },
                 onScanSpaces = { navController.navigate(ScanRoute(mode = ScanMode.CREDENTIALS, spacesOnly = true)) },
+                onOpenLicenses = { navController.navigate(LicensesRoute) },
+                onWiped = {
+                    navController.navigate(SetupRoute) {
+                        popUpTo(navController.graph.id) { inclusive = true }
+                    }
+                },
                 onOpenStyleguide = if (BuildConfig.DEBUG) {
                     { navController.navigate(StyleguideRoute) }
                 } else {
                     null
                 },
             )
+        }
+        composable<LicensesRoute> {
+            LicensesScreen(onBack = { navController.popBackStack() })
         }
         if (BuildConfig.DEBUG) {
             composable<StyleguideRoute> {
