@@ -24,6 +24,7 @@ private class FakeStorage : SpaceStorage {
     override val manualSpaces = MutableStateFlow<List<SpaceRef>>(emptyList())
     override val spaceMode = MutableStateFlow(SpaceMode.AUTO)
     override val discoveryTruncated = MutableStateFlow(false)
+    override val hiddenSpaceIds = MutableStateFlow<Set<Long>>(emptySet())
 
     override suspend fun setActiveSpaceId(id: Long?) {
         activeSpaceId.value = id
@@ -44,6 +45,10 @@ private class FakeStorage : SpaceStorage {
 
     override suspend fun setDiscoveryTruncated(truncated: Boolean) {
         discoveryTruncated.value = truncated
+    }
+
+    override suspend fun setHiddenSpaceIds(ids: Set<Long>) {
+        hiddenSpaceIds.value = ids
     }
 }
 
@@ -137,5 +142,36 @@ class SpaceRepositoryTest {
         repo.removeManual(3)
         assertEquals(1L, repo.chooseActive()?.id)
         assertEquals(listOf(1L, 3L), storage.recentSpaceIds.value)
+    }
+
+    @Test
+    fun `remove hides a discovered space and clears it as active, restore brings it back`() = runBlocking {
+        storage.setDiscoveredSpaces(listOf(SpaceRef(1, "Hotel"), SpaceRef(2, "Bar")))
+        repo.setActive(1)
+        repo.remove(1)
+        assertEquals(listOf(2L), repo.spaces.first().map { it.id })
+        assertEquals(listOf(1L), repo.hiddenSpaces.first().map { it.id })
+        assertEquals(null, repo.activeSpace.first())
+        repo.restore(1)
+        assertEquals(listOf(2L, 1L), repo.spaces.first().map { it.id })
+        assertTrue(repo.hiddenSpaces.first().isEmpty())
+    }
+
+    @Test
+    fun `remove drops a manual space entirely and discover keeps hidden spaces hidden`() = runBlocking {
+        storage.setManualSpaces(listOf(SpaceRef(3, "Manual", manual = true)))
+        repo.remove(3)
+        assertTrue(storage.manualSpaces.value.isEmpty())
+        assertTrue(repo.hiddenSpaces.first().isEmpty())
+
+        storage.setHiddenSpaceIds(setOf(1))
+        server.enqueue(page(space(1, "Hotel"), space(2, "Bar"), hasMore = false))
+        repo.discover()
+        assertEquals(listOf(2L), repo.spaces.first().map { it.id })
+        assertEquals(listOf(1L), repo.hiddenSpaces.first().map { it.id })
+        // Hidden ids that no longer exist are dropped when a hidden space is restored.
+        storage.setHiddenSpaceIds(setOf(1, 99))
+        repo.restore(1)
+        assertEquals(emptySet<Long>(), storage.hiddenSpaceIds.value)
     }
 }

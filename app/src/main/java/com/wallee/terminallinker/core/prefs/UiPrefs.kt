@@ -9,6 +9,8 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.wallee.terminallinker.core.api.IatUnit
+import com.wallee.terminallinker.core.update.UpdateInfo
+import com.wallee.terminallinker.core.update.UpdateStorage
 import com.wallee.terminallinker.feature.spaces.SpaceMode
 import com.wallee.terminallinker.feature.spaces.SpaceRef
 import com.wallee.terminallinker.feature.spaces.SpaceStorage
@@ -23,7 +25,9 @@ import kotlinx.serialization.json.Json
 private val Context.uiDataStore: DataStore<Preferences> by preferencesDataStore(name = "tl.ui")
 
 /** Non-sensitive UI state in DataStore `tl.ui` (docs/01 §Datenhaltung). Credentials never go here. */
-class UiPrefs(context: Context) : SpaceStorage {
+class UiPrefs(context: Context) :
+    SpaceStorage,
+    UpdateStorage {
     private val store = context.applicationContext.uiDataStore
     private val json = Json { ignoreUnknownKeys = true }
     private val spaceListSerializer = ListSerializer(SpaceRef.serializer())
@@ -38,6 +42,9 @@ class UiPrefs(context: Context) : SpaceStorage {
         prefs[SPACE_MODE]?.let { runCatching { SpaceMode.valueOf(it) }.getOrNull() } ?: SpaceMode.AUTO
     }
     override val discoveryTruncated: Flow<Boolean> = store.data.map { it[DISCOVERY_TRUNCATED] ?: false }
+    override val hiddenSpaceIds: Flow<Set<Long>> = store.data.map { prefs ->
+        prefs[HIDDEN_SPACE_IDS]?.split(',')?.mapNotNull { it.toLongOrNull() }?.toSet() ?: emptySet()
+    }
     val iatUnit: Flow<IatUnit> = store.data.map { prefs ->
         prefs[IAT_UNIT]?.let { runCatching { IatUnit.valueOf(it) }.getOrNull() } ?: IatUnit.SECONDS
     }
@@ -49,6 +56,11 @@ class UiPrefs(context: Context) : SpaceStorage {
         prefs[TERMINAL_SORT]?.let { runCatching { TerminalSort.valueOf(it) }.getOrNull() }
             ?: TerminalSort.UNLINKED_FIRST
     }
+    override val lastUpdateCheckMillis: Flow<Long?> = store.data.map { it[LAST_UPDATE_CHECK] }
+    override val availableUpdate: Flow<UpdateInfo?> = store.data.map { prefs ->
+        prefs[AVAILABLE_UPDATE]?.let { runCatching { json.decodeFromString(UpdateInfo.serializer(), it) }.getOrNull() }
+    }
+    override val dismissedUpdateVersion: Flow<String?> = store.data.map { it[DISMISSED_UPDATE] }
 
     override suspend fun setActiveSpaceId(id: Long?) {
         store.edit { prefs ->
@@ -83,6 +95,10 @@ class UiPrefs(context: Context) : SpaceStorage {
         store.edit { it[DISCOVERY_TRUNCATED] = truncated }
     }
 
+    override suspend fun setHiddenSpaceIds(ids: Set<Long>) {
+        store.edit { it[HIDDEN_SPACE_IDS] = ids.joinToString(",") }
+    }
+
     suspend fun setIatUnit(unit: IatUnit) {
         store.edit { it[IAT_UNIT] = unit.name }
     }
@@ -97,6 +113,29 @@ class UiPrefs(context: Context) : SpaceStorage {
 
     suspend fun setTerminalSort(sort: TerminalSort) {
         store.edit { it[TERMINAL_SORT] = sort.name }
+    }
+
+    override suspend fun setLastUpdateCheck(millis: Long, update: UpdateInfo?) {
+        store.edit { prefs ->
+            prefs[LAST_UPDATE_CHECK] = millis
+            if (update == null) {
+                prefs.remove(AVAILABLE_UPDATE)
+            } else {
+                prefs[AVAILABLE_UPDATE] = json.encodeToString(UpdateInfo.serializer(), update)
+            }
+        }
+    }
+
+    override suspend fun setDismissedUpdateVersion(version: String?) {
+        store.edit { prefs ->
+            if (version ==
+                null
+            ) {
+                prefs.remove(DISMISSED_UPDATE)
+            } else {
+                prefs[DISMISSED_UPDATE] = version
+            }
+        }
     }
 
     suspend fun currentIatUnit(): IatUnit = iatUnit.first()
@@ -117,9 +156,13 @@ class UiPrefs(context: Context) : SpaceStorage {
         val MANUAL_SPACES = stringPreferencesKey("manualSpaces")
         val SPACE_MODE = stringPreferencesKey("spaceMode")
         val DISCOVERY_TRUNCATED = booleanPreferencesKey("discoveryTruncated")
+        val HIDDEN_SPACE_IDS = stringPreferencesKey("hiddenSpaceIds")
         val IAT_UNIT = stringPreferencesKey("iatUnit")
         val SHOW_DECOMMISSIONED = booleanPreferencesKey("showDecommissioned")
         val TERMINAL_FILTER = stringPreferencesKey("terminalFilter")
         val TERMINAL_SORT = stringPreferencesKey("terminalSort")
+        val LAST_UPDATE_CHECK = longPreferencesKey("lastUpdateCheck")
+        val AVAILABLE_UPDATE = stringPreferencesKey("availableUpdate")
+        val DISMISSED_UPDATE = stringPreferencesKey("dismissedUpdate")
     }
 }

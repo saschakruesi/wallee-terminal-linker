@@ -43,6 +43,11 @@ class SpacesViewModel(private val container: AppContainer) : ViewModel() {
         SharingStarted.WhileSubscribed(5_000),
         emptyList(),
     )
+    val hidden: StateFlow<List<SpaceRef>> = repo.hiddenSpaces.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        emptyList(),
+    )
     val mode: StateFlow<SpaceMode> = repo.mode.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
@@ -106,5 +111,14 @@ class SpacesViewModel(private val container: AppContainer) : ViewModel() {
 
     fun removeManual(id: Long) {
         viewModelScope.launch { repo.removeManual(id) }
+    }
+
+    /** Removes any space (manual or discovered) from the app; discovered ones can be restored. */
+    fun remove(id: Long) {
+        viewModelScope.launch { repo.remove(id) }
+    }
+
+    fun restore(id: Long) {
+        viewModelScope.launch { repo.restore(id) }
     }
 }

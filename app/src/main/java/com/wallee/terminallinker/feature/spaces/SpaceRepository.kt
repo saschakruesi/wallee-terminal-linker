@@ -34,6 +34,9 @@ interface SpaceStorage {
     /** True when `GET /spaces` reported more spaces than the app loads (docs/02 §3.1). */
     val discoveryTruncated: Flow<Boolean>
 
+    /** Discovered spaces the user removed from the app; they survive re-discovery until restored. */
+    val hiddenSpaceIds: Flow<Set<Long>>
+
     suspend fun setActiveSpaceId(id: Long?)
 
     suspend fun setDiscoveryTruncated(truncated: Boolean)
@@ -43,6 +46,8 @@ interface SpaceStorage {
     suspend fun setManualSpaces(spaces: List<SpaceRef>)
 
     suspend fun setSpaceMode(mode: SpaceMode)
+
+    suspend fun setHiddenSpaceIds(ids: Set<Long>)
 }
 
 sealed class DiscoveryResult {
@@ -62,9 +67,18 @@ class SpaceRepository(
     private val storage: SpaceStorage,
     private val onIatUnitChanged: suspend (IatUnit) -> Unit = {},
 ) {
-    /** Discovered ∪ manual, sorted by name, without duplicates. */
-    val spaces: Flow<List<SpaceRef>> = combine(storage.discoveredSpaces, storage.manualSpaces) { auto, manual ->
-        (auto + manual).distinctBy { it.id }.sortedBy { it.name.lowercase() }
+    /** (Discovered ∪ manual) minus hidden, sorted by name, without duplicates. */
+    val spaces: Flow<List<SpaceRef>> = combine(
+        storage.discoveredSpaces,
+        storage.manualSpaces,
+        storage.hiddenSpaceIds,
+    ) { auto, manual, hidden ->
+        (auto + manual).distinctBy { it.id }.filterNot { it.id in hidden }.sortedBy { it.name.lowercase() }
+    }
+
+    /** Discovered spaces the user removed; shown in the settings so they can be restored. */
+    val hiddenSpaces: Flow<List<SpaceRef>> = combine(storage.discoveredSpaces, storage.hiddenSpaceIds) { auto, hidden ->
+        auto.filter { it.id in hidden }.sortedBy { it.name.lowercase() }
     }
 
     val activeSpace: Flow<SpaceRef?> = combine(spaces, storage.activeSpaceId) { list, id ->
@@ -147,6 +161,25 @@ class SpaceRepository(
         if (storage.activeSpaceId.first() == id) storage.setActiveSpaceId(null)
     }
 
+    /**
+     * Removes a space from the app (never from wallee): manual spaces are deleted, discovered ones are
+     * hidden so the next discovery does not bring them back. The active space is cleared if affected.
+     */
+    suspend fun remove(id: Long) {
+        if (storage.manualSpaces.first().any { it.id == id }) {
+            removeManual(id)
+            return
+        }
+        storage.setHiddenSpaceIds(storage.hiddenSpaceIds.first() + id)
+        if (storage.activeSpaceId.first() == id) storage.setActiveSpaceId(null)
+    }
+
+    /** Undoes [remove] for a discovered space; ids that no longer exist are dropped on the way. */
+    suspend fun restore(id: Long) {
+        val known = storage.discoveredSpaces.first().map { it.id }.toSet()
+        storage.setHiddenSpaceIds((storage.hiddenSpaceIds.first() - id).filter { it in known }.toSet())
+    }
+
     suspend fun setActive(id: Long) {
         storage.setActiveSpaceId(id)
     }
@@ -157,7 +190,10 @@ class SpaceRepository(
      */
     suspend fun chooseActive(preferredId: Long? = null): SpaceRef? {
         // Discovery order first (as wallee lists them), then manual spaces — not the alphabetical display order.
-        val list = (storage.discoveredSpaces.first() + storage.manualSpaces.first()).distinctBy { it.id }
+        val hidden = storage.hiddenSpaceIds.first()
+        val list = (storage.discoveredSpaces.first() + storage.manualSpaces.first())
+            .distinctBy { it.id }
+            .filterNot { it.id in hidden }
         val previous = storage.activeSpaceId.first()
         val chosen = list.firstOrNull { it.id == preferredId && it.active }
             ?: list.firstOrNull { it.id == previous && it.active }
@@ -173,6 +209,7 @@ class SpaceRepository(
         storage.setManualSpaces(emptyList())
         storage.setActiveSpaceId(null)
         storage.setSpaceMode(SpaceMode.AUTO)
+        storage.setHiddenSpaceIds(emptySet())
     }
 
     private fun Space.toRef(): SpaceRef = SpaceRef(
