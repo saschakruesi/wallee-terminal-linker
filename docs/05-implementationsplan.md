@@ -3,7 +3,7 @@
 Sechs Phasen, jede mit «Definition of Done». Reihenfolge einhalten; nach Phase 4 ist die App im Feld
 einsetzbar (Link/Replace/Unlink), Phase 5 bringt die Komfortfunktionen, Phase 6 den Release.
 
-**Aktuelle Phase: 4 — Scanner, Link, Replace, Unlink.** Phasen 1–3 sind abgenommen und auf `main` gemergt (Theme, Setup mit Verbindungstest, Space-Auswahl, Terminalliste und Detail aus wallee). Phase 4 entsteht auf Branch `phase-4-scan`. Diese Zeile bei jedem Phasenabschluss aktualisieren.
+**Aktuelle Phase: 5 — Komfort & Feinschliff.** Phasen 1–4 sind abgenommen und auf `main` gemergt (Theme, Setup mit Verbindungstest, Space-Auswahl, Terminalliste und Detail, Kamera-Scanner, Link/Replace/Unlink mit Ergebnis-Screen). Phase 5 entsteht auf Branch `phase-5-polish`. Diese Zeile bei jedem Phasenabschluss aktualisieren.
 
 Voraussetzungen: Android Studio (aktuell), JDK 17, ein wallee **Test-Space** mit Application User (Rolle mit
 Payment-Terminal-Rechten in ≥ 2 Spaces), mindestens ein Payment Terminal im Zustand `ACTIVE` ohne Gerät und
