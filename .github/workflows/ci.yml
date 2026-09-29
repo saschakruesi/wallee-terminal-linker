@@ -86,6 +86,8 @@ jobs:
           api-level: 35
           arch: x86_64
           target: google_apis
+          # The default AVD skin is 320x640; a phone-sized screen keeps the tests' rows and buttons on screen.
+          profile: pixel_6
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back emulated
           disable-animations: true
           script: ./gradlew connectedDebugAndroidTest --no-daemon
