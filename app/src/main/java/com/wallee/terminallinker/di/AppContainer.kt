@@ -8,10 +8,12 @@ import com.wallee.terminallinker.core.auth.CredentialHandoff
 import com.wallee.terminallinker.core.auth.CredentialStore
 import com.wallee.terminallinker.core.prefs.UiPrefs
 import com.wallee.terminallinker.feature.spaces.SpaceRepository
+import com.wallee.terminallinker.feature.terminals.TerminalRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrl
 
 /** Manual dependency container (docs/01 §DI): one instance per process, created in [com.wallee.terminallinker.TerminalLinkerApp]. */
 class AppContainer(context: Context) {
@@ -27,6 +29,8 @@ class AppContainer(context: Context) {
         WalleeClient(
             credentialsProvider = { credentialStore.load() },
             httpClient = WalleeClient.defaultHttpClient(*interceptors),
+            // Debug builds can point at a local mock (BuildConfig.WALLEE_BASE_URL); release always uses app-wallee.com.
+            baseUrl = baseUrl().toHttpUrl(),
         ).also { client ->
             appScope.launch { client.iatUnit = uiPrefs.currentIatUnit() }
         }
@@ -40,10 +44,16 @@ class AppContainer(context: Context) {
         )
     }
 
-    /** "Alle lokalen Daten löschen": credentials, spaces, preferences. */
+    val terminalRepository: TerminalRepository by lazy { TerminalRepository(walleeClient) }
+
+    private fun baseUrl(): String =
+        if (BuildConfig.DEBUG) BuildConfig.WALLEE_BASE_URL else WalleeClient.DEFAULT_BASE_URL
+
+    /** "Alle lokalen Daten löschen": credentials, spaces, preferences, caches. */
     suspend fun wipe() {
         credentialStore.clear()
         spaceRepository.clear()
+        terminalRepository.clear()
         uiPrefs.clearAll()
     }
 }

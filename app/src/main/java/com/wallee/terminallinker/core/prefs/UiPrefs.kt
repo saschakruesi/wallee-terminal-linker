@@ -12,6 +12,8 @@ import com.wallee.terminallinker.core.api.IatUnit
 import com.wallee.terminallinker.feature.spaces.SpaceMode
 import com.wallee.terminallinker.feature.spaces.SpaceRef
 import com.wallee.terminallinker.feature.spaces.SpaceStorage
+import com.wallee.terminallinker.feature.terminals.TerminalFilter
+import com.wallee.terminallinker.feature.terminals.TerminalSort
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -40,6 +42,13 @@ class UiPrefs(context: Context) : SpaceStorage {
         prefs[IAT_UNIT]?.let { runCatching { IatUnit.valueOf(it) }.getOrNull() } ?: IatUnit.SECONDS
     }
     val showDecommissioned: Flow<Boolean> = store.data.map { it[SHOW_DECOMMISSIONED] ?: false }
+    val terminalFilter: Flow<TerminalFilter> = store.data.map { prefs ->
+        prefs[TERMINAL_FILTER]?.let { runCatching { TerminalFilter.valueOf(it) }.getOrNull() } ?: TerminalFilter.ALL
+    }
+    val terminalSort: Flow<TerminalSort> = store.data.map { prefs ->
+        prefs[TERMINAL_SORT]?.let { runCatching { TerminalSort.valueOf(it) }.getOrNull() }
+            ?: TerminalSort.UNLINKED_FIRST
+    }
 
     override suspend fun setActiveSpaceId(id: Long?) {
         store.edit { prefs ->
@@ -82,6 +91,14 @@ class UiPrefs(context: Context) : SpaceStorage {
         store.edit { it[SHOW_DECOMMISSIONED] = show }
     }
 
+    suspend fun setTerminalFilter(filter: TerminalFilter) {
+        store.edit { it[TERMINAL_FILTER] = filter.name }
+    }
+
+    suspend fun setTerminalSort(sort: TerminalSort) {
+        store.edit { it[TERMINAL_SORT] = sort.name }
+    }
+
     suspend fun currentIatUnit(): IatUnit = iatUnit.first()
 
     /** Wipes everything except nothing — used by "delete all local data" together with [CredentialStore.clear]. */
@@ -102,5 +119,7 @@ class UiPrefs(context: Context) : SpaceStorage {
         val DISCOVERY_TRUNCATED = booleanPreferencesKey("discoveryTruncated")
         val IAT_UNIT = stringPreferencesKey("iatUnit")
         val SHOW_DECOMMISSIONED = booleanPreferencesKey("showDecommissioned")
+        val TERMINAL_FILTER = stringPreferencesKey("terminalFilter")
+        val TERMINAL_SORT = stringPreferencesKey("terminalSort")
     }
 }
