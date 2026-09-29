@@ -1,5 +1,8 @@
 package com.wallee.terminallinker.ui
 
+import android.app.Activity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import com.wallee.terminallinker.TerminalLinkerApp
@@ -68,6 +71,17 @@ class MockWallee {
         InstrumentationRegistry.getInstrumentation().context.assets.open(name).bufferedReader().use { it.readText() }
 
     companion object {
+        /**
+         * Hides the IME without Espresso's `closeSoftKeyboard()`, which waits for window focus and times out
+         * on CI emulators (RootViewWithoutFocusException).
+         */
+        fun hideKeyboard(activity: Activity) {
+            activity.runOnUiThread {
+                WindowCompat.getInsetsController(activity.window, activity.window.decorView)
+                    .hide(WindowInsetsCompat.Type.ime())
+            }
+        }
+
         const val TEST_KEY = "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA="
 
         fun terminal(id: Long, name: String, serial: String? = null, version: Int = 1): String =

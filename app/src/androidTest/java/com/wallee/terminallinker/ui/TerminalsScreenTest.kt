@@ -11,7 +11,6 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.wallee.terminallinker.R
 import com.wallee.terminallinker.core.ui.WalleeTheme
@@ -88,7 +87,7 @@ class TerminalsScreenTest {
     fun unlinkedFilterShowsOnlyUnlinkedAndTapOpensDetail() {
         // Narrow with the search first so every matching row fits on screen: Kasse 3, 30–39.
         compose.onNode(hasSetTextAction()).performTextInput("Kasse 3")
-        Espresso.closeSoftKeyboard()
+        MockWallee.hideKeyboard(compose.activity)
         row("Kasse 3").assertExists()
         segment(string(R.string.terminals_filter_unlinked)).performClick()
         row("Kasse 3").assertIsDisplayed()

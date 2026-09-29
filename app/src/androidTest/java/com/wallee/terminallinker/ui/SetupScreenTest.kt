@@ -8,7 +8,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
-import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.wallee.terminallinker.R
 import com.wallee.terminallinker.core.ui.WalleeTheme
@@ -51,7 +50,7 @@ class SetupScreenTest {
         fields[0].performTextInput(userId)
         fields[1].performTextInput(MockWallee.TEST_KEY)
         // The keyboard would cover the button at the bottom of the form.
-        Espresso.closeSoftKeyboard()
+        MockWallee.hideKeyboard(compose.activity)
         compose.onNodeWithText(string(R.string.setup_test_and_save)).performScrollTo().performClick()
     }
 
