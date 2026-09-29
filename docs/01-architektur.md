@@ -122,6 +122,12 @@ base64 -i terminal-linker.jks | pbcopy   # → GitHub Secret TL_KEYSTORE_BASE64
 Den Keystore an einem sicheren Ort (Passwortmanager) aufbewahren — ohne ihn kann eine installierte App
 nicht mehr per Update ersetzt werden.
 
+Achtung: `keytool` ab JDK 9 erzeugt PKCS12-Keystores. Dort gilt für den Schlüssel immer das
+Keystore-Passwort, ein abweichendes `-keypass` wird stillschweigend ignoriert. `TL_KEY_PASSWORD` muss deshalb
+gleich `TL_KEYSTORE_PASSWORD` sein, sonst scheitert `packageRelease` mit «Given final block not properly
+padded». Der Release-Workflow prüft Keystore, Alias und Passwörter vor dem Build mit `keytool`. Secrets ohne
+Zeilenumbruch setzen, z.B. `printf '%s' '<passwort>' | gh secret set TL_KEYSTORE_PASSWORD`.
+
 ### GitHub Actions
 
 - `.github/workflows/ci.yml`: bei Push/PR → `./gradlew ktlintCheck test assembleDebug`, Debug-APK als
