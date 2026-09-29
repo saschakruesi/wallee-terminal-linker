@@ -156,7 +156,8 @@ class SpaceRepository(
      * previously active one, else the first active space in the list.
      */
     suspend fun chooseActive(preferredId: Long? = null): SpaceRef? {
-        val list = spaces.first()
+        // Discovery order first (as wallee lists them), then manual spaces — not the alphabetical display order.
+        val list = (storage.discoveredSpaces.first() + storage.manualSpaces.first()).distinctBy { it.id }
         val previous = storage.activeSpaceId.first()
         val chosen = list.firstOrNull { it.id == preferredId && it.active }
             ?: list.firstOrNull { it.id == previous && it.active }

@@ -1,6 +1,8 @@
 package com.wallee.terminallinker.core.api
 
 import android.content.Context
+import android.util.Log
+import com.wallee.terminallinker.BuildConfig
 import com.wallee.terminallinker.R
 import com.wallee.terminallinker.core.auth.CredentialQrException
 
@@ -33,5 +35,8 @@ fun Throwable.toUserMessage(context: Context): String = when (this) {
 
     is CredentialQrException.Malformed -> context.getString(R.string.qr_error_malformed)
 
-    else -> message?.takeIf { it.isNotBlank() } ?: context.getString(R.string.error_unknown)
+    else -> {
+        if (BuildConfig.DEBUG) Log.w("wallee-error", "unmapped ${this.javaClass.name}: $message", this)
+        context.getString(R.string.error_unknown) + " (" + this.javaClass.simpleName + ")"
+    }
 }

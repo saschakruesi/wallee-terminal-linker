@@ -7,7 +7,10 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.Call
 import okhttp3.Callback
@@ -33,6 +36,7 @@ class WalleeClient(
     private val baseUrl: HttpUrl = DEFAULT_BASE_URL.toHttpUrl(),
     private val json: Json = WalleeJson,
     private val clock: () -> Long = System::currentTimeMillis,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     /** Mutable so the setup flow can switch to milliseconds after a 401 (docs/02 §1). */
     @Volatile
@@ -57,7 +61,8 @@ class WalleeClient(
         expand: List<String> = emptyList(),
         spaceId: Long? = null,
         jsonBody: String? = null,
-    ): ApiResponse {
+    ): ApiResponse = withContext(ioDispatcher) {
+        // Everything, including reading the body, runs off the main thread (docs/02 §2).
         val credentials = credentialsProvider() ?: throw MissingCredentialsException()
         val url = buildUrl(path, query, expand)
         val requestPath = url.encodedPath + (url.encodedQuery?.let { "?$it" } ?: "")
@@ -88,7 +93,7 @@ class WalleeClient(
         response.use {
             val body = it.body.string()
             if (!it.isSuccessful) throw toApiException(it.code, body)
-            return ApiResponse(it.code, body)
+            ApiResponse(it.code, body)
         }
     }
 
