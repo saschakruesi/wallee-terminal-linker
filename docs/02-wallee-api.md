@@ -100,7 +100,7 @@ Nur Spaces mit `state = ACTIVE` sind wählbar; andere werden ausgegraut angezeig
 
 | Zweck | Call |
 |---|---|
-| Liste / Suche | `GET /payment/terminals/search?limit=100&offset=0&order=name:ASC&query=<q>` → `{ data: PaymentTerminal[], hasMore, limit, offset }` |
+| Liste / Suche | `GET /payment/terminals/search?limit=100&offset=<n>` → `{ data: PaymentTerminal[], hasMore, limit, offset }` — die App lädt ohne `query`/`order` und sortiert lokal; `order=name:ASC` und `query` bleiben für die Server-Suche ab 1000 Terminals reserviert (Syntax noch nicht verifiziert) |
 | Einzelnes Terminal (Detail, nach Aktion neu laden) | `GET /payment/terminals/{id}` → `PaymentTerminal` |
 
 Query-Syntax (Doku §«Search»): Feldvergleiche mit `:` (gleich), `:~` (enthält), Verknüpfung `AND`/`OR`,
@@ -129,7 +129,7 @@ Grund: Lokale Filterung ist sofort, funktioniert bei schlechtem Netz und erlaubt
 | `deviceSerialNumber` | **leer = ungelinkt, gesetzt = gelinkt** (zentrales Kriterium der App) |
 | `deviceName` | Gerätemodell des gelinkten Geräts (z.B. «PAX A77») |
 | `type.name` (lokalisierte Map) | Terminaltyp |
-| `locationVersion.location.name` | Standort (mit `expand=locationVersion.location`; ohne Expand ggf. nur IDs — in Phase 3 prüfen, welche Expands nötig sind) |
+| `locationVersion.location.name` | Standort (mit `expand=locationVersion.location`). Die App sendet `expand=locationVersion.location&expand=configurationVersion.configuration`; antwortet wallee darauf mit 400/422, wiederholt sie einmal ohne `expand` und zeigt «—» statt Namen. Stand 29.09.2026: mit echtem Space noch zu bestätigen |
 | `configurationVersion.configuration.name` | Konfiguration (mit `expand=configurationVersion.configuration`) |
 | `defaultCurrency` | Detail |
 | `activatedOn`, `deactivatedOn`, `decommissionedOn` | Detail (Datum) |
