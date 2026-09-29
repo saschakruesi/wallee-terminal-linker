@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -35,10 +36,14 @@ private val entries = listOf(
     LicenseEntry(R.string.licenses_kotlinx, R.string.licenses_apache, APACHE_URL),
 )
 
-/** Static license overview (docs/03 §Einstellungen → Über); the generated OSS list follows in phase 6. */
+/**
+ * License overview (docs/03 §Einstellungen → Über): curated entries for fonts and ML Kit, then the complete
+ * list of open-source components generated at build time (docs/05 Phase 6.3).
+ */
 @Composable
 fun LicensesScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val components = remember { OssLicenses.load(context) }
     WScreen(header = { WHeader(leading = { WBackButton(onClick = onBack) }) }) {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             Spacer(Modifier.height(WalleeSpacing.S3))
@@ -63,12 +68,32 @@ fun LicensesScreen(onBack: () -> Unit) {
                     },
                 )
             }
-            Spacer(Modifier.height(WalleeSpacing.S2))
+            Spacer(Modifier.height(WalleeSpacing.S3))
             Text(
-                text = stringResource(R.string.licenses_full_list_note),
-                style = WalleeTextStyles.footnote,
+                text = stringResource(R.string.licenses_oss_title),
+                style = WalleeTextStyles.sectionTitle,
                 modifier = Modifier.padding(horizontal = WalleeSpacing.Side),
             )
+            Spacer(Modifier.height(WalleeSpacing.S1))
+            if (components.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.licenses_full_list_note),
+                    style = WalleeTextStyles.footnote,
+                    modifier = Modifier.padding(horizontal = WalleeSpacing.Side),
+                )
+            }
+            components.forEach { component ->
+                val url = component.url
+                WListRow(
+                    title = listOfNotNull(component.name, component.version).joinToString(" "),
+                    subtitle = component.license ?: stringResource(R.string.licenses_unknown),
+                    onClick = if (url != null) {
+                        { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) } }
+                    } else {
+                        null
+                    },
+                )
+            }
             Spacer(Modifier.height(WalleeSpacing.S4))
         }
     }

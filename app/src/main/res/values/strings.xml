@@ -337,7 +337,7 @@
     <string name="licenses_androidx">AndroidX / Jetpack Compose, CameraX</string>
     <string name="licenses_okhttp">OkHttp (Square)</string>
     <string name="licenses_kotlinx">Kotlin, kotlinx.coroutines, kotlinx.serialization</string>
-    <string name="licenses_full_list_note">Die vollständige Liste aller Open-Source-Komponenten wird mit dem Release erzeugt.</string>
+    <string name="licenses_full_list_note">Die Liste der Open-Source-Komponenten ist in diesem Build nicht enthalten.</string>
     <string name="update_banner">Version %1$s verfügbar</string>
     <string name="update_banner_open">Ansehen</string>
     <string name="cd_dismiss_update">Hinweis ausblenden</string>
@@ -345,4 +345,6 @@
     <string name="cd_quick_link">Gerät direkt linken</string>
     <string name="error_offline">Offline – keine Netzverbindung (Flugmodus?). Verbindung herstellen und erneut versuchen.</string>
     <string name="detail_offline_cache">Offline – Angaben aus dem Zwischenspeicher, evtl. nicht aktuell.</string>
+    <string name="licenses_oss_title">Open-Source-Komponenten</string>
+    <string name="licenses_unknown">Lizenz nicht angegeben</string>
 </resources>

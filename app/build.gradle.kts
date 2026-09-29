@@ -1,3 +1,4 @@
+import com.github.jk1.license.render.JsonReportRenderer
 import java.util.Base64
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -7,6 +8,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.license.report)
 }
 
 // Release signing comes from the environment only (docs/01 §Build & Release). Without it the release
@@ -21,6 +23,9 @@ val releaseKeystore: File? = keystoreBase64?.let { encoded ->
 if (releaseKeystore == null) {
     logger.warn("TL_KEYSTORE_BASE64 not set: release build will be unsigned/debug-signed (local test only).")
 }
+
+// Declared before android {} because script-level vals are initialised in order.
+val ossLicensesDir = layout.buildDirectory.dir("generated/ossLicenses")
 
 android {
     namespace = "com.wallee.terminallinker"
@@ -88,6 +93,15 @@ android {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }
 }
+
+// Full list of runtime dependencies with their licenses, rendered as assets/oss_licenses.json (docs/05 Phase 6.3).
+licenseReport {
+    configurations = arrayOf("releaseRuntimeClasspath")
+    outputDir = ossLicensesDir.get().asFile.path
+    renderers = arrayOf(JsonReportRenderer("oss_licenses.json", false))
+}
+// Wiring the directory through the task provider gives every consumer (assets merge, lint) the dependency.
+android.sourceSets.getByName("main").assets.srcDir(tasks.named("generateLicenseReport").map { ossLicensesDir })
 
 kotlin {
     compilerOptions {

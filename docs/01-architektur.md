@@ -126,9 +126,13 @@ nicht mehr per Update ersetzt werden.
 
 - `.github/workflows/ci.yml`: bei Push/PR → `./gradlew ktlintCheck test assembleDebug`, Debug-APK als
   Workflow-Artefakt (7 Tage).
-- `.github/workflows/release.yml`: bei Tag `v*` → Keystore aus Secrets entpacken, `assembleRelease`,
-  `versionName` aus dem Tag, `versionCode` = laufende Nummer (Anzahl Tags oder `github.run_number`),
-  APK `wallee-terminal-linker-<version>.apk` + `SHA256SUMS.txt` als GitHub Release anhängen.
+- `.github/workflows/release.yml`: bei Tag `v*` → Secrets prüfen (bricht ohne Keystore ab), ktlint + Unit-Tests,
+  `assembleRelease`, `versionName` aus dem Tag, `versionCode` = `github.run_number`, Signatur mit `apksigner`
+  verifiziert (Debug-Signatur wird nie veröffentlicht), APK `wallee-terminal-linker-<version>.apk`,
+  `SHA256SUMS.txt` und `mapping-<version>.txt` (R8) als GitHub Release; Release-Notes aus `CHANGELOG.md`.
+- Lizenzen: das Gradle-Plugin `com.github.jk1.dependency-license-report` erzeugt beim Build
+  `assets/oss_licenses.json` aus dem Release-Runtime-Classpath; die App zeigt die Liste unter
+  Einstellungen → Lizenzen.
 - Installation beim Nutzer: APK aus dem Release herunterladen, «Installation aus unbekannten Quellen»
   für den Browser erlauben, öffnen. Kein Play Store in v1. Beschreibung in `README.md`.
 

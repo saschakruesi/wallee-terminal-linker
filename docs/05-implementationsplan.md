@@ -126,6 +126,12 @@ DE/EN mit Schriftgrösse 1.3× und Prozess-Tod («Don't keep activities») auf d
 **DoD:** `v1.0.0`-Release auf GitHub mit signiertem APK; Installation auf einem frischen Gerät und
 Durchlauf T1–T14 ohne Befund.
 
+**Stand (29.09.2026, Branch `phase-6-release`):** Punkte 1–3 umgesetzt (`release.yml`, README, CHANGELOG,
+Lizenzliste per Gradle-Plugin in der App). Der Release-Build (R8) läuft auf einem API-26-Emulator: ein
+fehlender Keep-Regel-Eintrag für die Navigation-Enums liess ihn vorher beim Start abstürzen — behoben in
+`proguard-rules.pro`. Offen: Keystore erzeugen und die vier Secrets im Repository hinterlegen (nur der
+Besitzer), Tag `v1.0.0` setzen, Abnahmetest T1–T14 mit Test-Space auf Android 8 und aktuell (Punkt 4).
+
 ---
 
 ## Abnahmetest (manuell, Test-Space)
