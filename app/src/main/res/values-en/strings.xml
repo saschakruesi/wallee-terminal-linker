@@ -60,7 +60,7 @@
     <string name="terminals_empty">There are no terminals in this space. Terminals are created in the wallee backend under Terminals → Payment Terminals.</string>
     <string name="terminals_no_match">No terminal matches ‹%1$s›</string>
     <string name="terminals_clear_search">Clear search</string>
-    <string name="terminals_placeholder_note">Phase 1: sample data. The list is loaded from wallee in phase 3.</string>
+    <string name="terminals_placeholder_note">Link, replace and unlink follow with the scanner in phase 4.</string>
 
     <string name="detail_label_status">Status</string>
     <string name="detail_label_device">Device</string>
@@ -228,4 +228,33 @@
     <string name="settings_manual_spaces">Manually added spaces</string>
     <string name="settings_no_manual_spaces">No manually added spaces.</string>
     <string name="settings_add_space">Add space ID</string>
+
+    <string name="terminals_sort_name">Name A–Z</string>
+    <string name="terminals_sort_identifier">Terminal ID</string>
+    <string name="terminals_sort_location">Location</string>
+    <string name="terminals_sort_activated">Last activated</string>
+    <string name="terminals_sort_title">Sort order</string>
+    <string name="terminals_loading">Loading terminals…</string>
+    <string name="terminals_error_title">Terminals could not be loaded</string>
+    <string name="terminals_capped">Only the first %1$d terminals are loaded. Narrow the search or filter in the wallee backend.</string>
+    <string name="terminals_updated_at">updated %1$s</string>
+    <string name="terminals_offline_cache">Last loaded list — no connection.</string>
+    <string name="terminal_serial_line">S/N %1$s</string>
+    <string name="cd_pull_to_refresh">Pull to refresh</string>
+
+    <string name="detail_rename_title">Rename terminal</string>
+    <string name="detail_rename_label">Name</string>
+    <string name="detail_renamed">Renamed</string>
+    <string name="detail_refreshed">Refreshed</string>
+    <string name="detail_config_confirm_title">Trigger configuration</string>
+    <string name="detail_config_confirm_text">The configuration will now be sent to the device.</string>
+    <string name="detail_config_confirm_action">Trigger</string>
+    <string name="detail_config_triggered">Configuration triggered</string>
+    <string name="detail_id_copied">Terminal ID copied</string>
+    <string name="detail_loading">Loading terminal…</string>
+    <string name="detail_not_found">Terminal not found (any more).</string>
+    <string name="detail_conflict_reloaded">The terminal was modified in the meantime — data reloaded. Please try again.</string>
+    <string name="detail_label_activation_code">Activation code</string>
+
+    <string name="settings_show_decommissioned">Show decommissioned terminals</string>
 </resources>

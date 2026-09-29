@@ -66,7 +66,7 @@
     <string name="terminals_empty">In diesem Space sind keine Terminals angelegt. Terminals werden im wallee-Backend unter Terminals → Payment Terminals erstellt.</string>
     <string name="terminals_no_match">Kein Terminal passt zu ‹%1$s›</string>
     <string name="terminals_clear_search">Suche leeren</string>
-    <string name="terminals_placeholder_note">Phase 1: Beispieldaten. Die Liste wird in Phase 3 aus wallee geladen.</string>
+    <string name="terminals_placeholder_note">Linken, Ersetzen und Trennen folgen mit dem Scanner in Phase 4.</string>
 
     <!-- Terminal-Detail -->
     <string name="detail_label_status">Status</string>
@@ -245,4 +245,36 @@
     <string name="settings_manual_spaces">Manuell erfasste Spaces</string>
     <string name="settings_no_manual_spaces">Keine manuell erfassten Spaces.</string>
     <string name="settings_add_space">Space-ID hinzufügen</string>
+
+    <!-- Terminals (Phase 3) -->
+    <string name="terminals_sort_name">Name A–Z</string>
+    <string name="terminals_sort_identifier">Terminal-ID</string>
+    <string name="terminals_sort_location">Standort</string>
+    <string name="terminals_sort_activated">Zuletzt aktiviert</string>
+    <string name="terminals_sort_title">Sortierung</string>
+    <string name="terminals_loading">Terminals werden geladen…</string>
+    <string name="terminals_error_title">Terminals konnten nicht geladen werden</string>
+    <string name="terminals_capped">Nur die ersten %1$d Terminals geladen. Suche eingrenzen oder im wallee-Backend filtern.</string>
+    <string name="terminals_updated_at">aktualisiert %1$s</string>
+    <string name="terminals_offline_cache">Zuletzt geladene Liste — keine Verbindung.</string>
+    <string name="terminal_serial_line">S/N %1$s</string>
+    <string name="cd_pull_to_refresh">Zum Aktualisieren ziehen</string>
+
+    <!-- Terminal-Detail (Phase 3) -->
+    <string name="detail_rename_title">Terminal umbenennen</string>
+    <string name="detail_rename_label">Name</string>
+    <string name="detail_renamed">Umbenannt</string>
+    <string name="detail_refreshed">Aktualisiert</string>
+    <string name="detail_config_confirm_title">Konfiguration auslösen</string>
+    <string name="detail_config_confirm_text">Die Konfiguration wird jetzt an das Gerät gesendet.</string>
+    <string name="detail_config_confirm_action">Auslösen</string>
+    <string name="detail_config_triggered">Konfiguration ausgelöst</string>
+    <string name="detail_id_copied">Terminal-ID kopiert</string>
+    <string name="detail_loading">Terminal wird geladen…</string>
+    <string name="detail_not_found">Terminal nicht (mehr) gefunden.</string>
+    <string name="detail_conflict_reloaded">Das Terminal wurde inzwischen verändert — Daten neu geladen. Bitte erneut versuchen.</string>
+    <string name="detail_label_activation_code">Aktivierungscode</string>
+
+    <!-- Einstellungen (Phase 3) -->
+    <string name="settings_show_decommissioned">Stillgelegte Terminals anzeigen</string>
 </resources>

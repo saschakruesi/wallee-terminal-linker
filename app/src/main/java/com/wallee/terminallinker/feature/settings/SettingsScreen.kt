@@ -28,6 +28,7 @@ import com.wallee.terminallinker.di.appViewModel
 import com.wallee.terminallinker.feature.spaces.AddSpaceDialog
 import com.wallee.terminallinker.feature.spaces.SpaceMode
 import com.wallee.terminallinker.feature.spaces.SpacesViewModel
+import kotlinx.coroutines.launch
 
 /** Settings (docs/03): credentials and spaces are live since phase 2; display and about follow in phase 5. */
 @Composable
@@ -109,7 +110,17 @@ fun SettingsScreen(
             WListRow(title = stringResource(R.string.settings_add_space), onClick = spacesViewModel::openAddSpace)
             Spacer(Modifier.height(WalleeSpacing.S2))
             Section(stringResource(R.string.settings_section_display))
-            WListRow(title = stringResource(R.string.settings_section_display), onClick = {})
+            val showDecommissioned by container.uiPrefs.showDecommissioned.collectAsStateWithLifecycle(
+                initialValue = false,
+            )
+            val scope = androidx.compose.runtime.rememberCoroutineScope()
+            com.wallee.terminallinker.core.ui.components.WCheckbox(
+                checked = showDecommissioned,
+                onCheckedChange = { value -> scope.launch { container.uiPrefs.setShowDecommissioned(value) } },
+                label = stringResource(R.string.settings_show_decommissioned),
+                modifier = Modifier.padding(horizontal = WalleeSpacing.Side),
+            )
+            Spacer(Modifier.height(WalleeSpacing.S2))
             Section(stringResource(R.string.settings_section_about))
             WListRow(
                 title = stringResource(R.string.settings_section_about),

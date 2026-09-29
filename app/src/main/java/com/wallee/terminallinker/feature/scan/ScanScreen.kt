@@ -38,8 +38,10 @@ import com.wallee.terminallinker.core.ui.components.WInput
 import com.wallee.terminallinker.core.ui.components.WPrimaryButton
 import com.wallee.terminallinker.core.ui.components.WSecondaryButton
 import com.wallee.terminallinker.core.ui.components.WTextButton
-import com.wallee.terminallinker.feature.terminals.SampleTerminals
+import com.wallee.terminallinker.di.appContainer
+import com.wallee.terminallinker.feature.terminals.displayName
 import com.wallee.terminallinker.navigation.ScanMode
+import kotlinx.coroutines.flow.first
 
 /**
  * Scanner layout from docs/03 without a camera (phase 4). Black background, viewfinder corners, hint,
@@ -54,7 +56,18 @@ fun ScanScreen(
     onCredentialsScanned: () -> Unit,
     spacesOnly: Boolean = false,
 ) {
-    val terminal = terminalId?.let(SampleTerminals::byId)
+    val container = appContainer()
+    val terminalState =
+        androidx.compose.runtime.remember {
+            mutableStateOf<com.wallee.terminallinker.core.api.dto.PaymentTerminal?>(null)
+        }
+    androidx.compose.runtime.LaunchedEffect(terminalId) {
+        if (terminalId != null) {
+            val spaceId = container.spaceRepository.activeSpace.first()?.id
+            terminalState.value = spaceId?.let { container.terminalRepository.cached(it, terminalId) }
+        }
+    }
+    val terminal = terminalState.value
     var manualOpen by rememberSaveable { mutableStateOf(false) }
     var confirmSerial by rememberSaveable { mutableStateOf<String?>(null) }
     var manualValue by rememberSaveable { mutableStateOf("") }
@@ -108,7 +121,7 @@ fun ScanScreen(
             if (terminal != null) {
                 Spacer(Modifier.height(WalleeSpacing.S1))
                 Text(
-                    text = stringResource(R.string.scan_terminal_line, terminal.name, terminal.identifier),
+                    text = stringResource(R.string.scan_terminal_line, terminal.displayName, terminal.identifier ?: ""),
                     style = WalleeTextStyles.label,
                     color = WalleeColors.White.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center,
@@ -183,7 +196,11 @@ fun ScanScreen(
                 Text(text = serial, style = WalleeTextStyles.serial)
                 Spacer(Modifier.height(WalleeSpacing.S2))
                 Text(
-                    text = stringResource(R.string.scan_confirm_link_with, terminal.name, terminal.identifier),
+                    text = stringResource(
+                        R.string.scan_confirm_link_with,
+                        terminal.displayName,
+                        terminal.identifier ?: "",
+                    ),
                     style = WalleeTextStyles.body,
                 )
                 Spacer(Modifier.height(WalleeSpacing.S3))

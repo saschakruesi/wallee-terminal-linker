@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -21,15 +23,24 @@ import com.wallee.terminallinker.core.ui.components.TurquoisePanel
 import com.wallee.terminallinker.core.ui.components.WPrimaryButton
 import com.wallee.terminallinker.core.ui.components.WScreen
 import com.wallee.terminallinker.core.ui.components.WSecondaryButton
-import com.wallee.terminallinker.feature.terminals.SampleTerminals
+import com.wallee.terminallinker.di.appContainer
+import com.wallee.terminallinker.feature.terminals.displayName
 import com.wallee.terminallinker.navigation.ResultOutcome
 import com.wallee.terminallinker.navigation.ResultRoute
+import kotlinx.coroutines.flow.first
 
 /** Result layout from docs/03: turquoise upper 60 % with the check mark and statement, actions below. */
 @Composable
 fun ResultScreen(route: ResultRoute, onBackToList: () -> Unit, onLinkNext: () -> Unit) {
-    val terminal = SampleTerminals.byId(route.terminalId)
-    val name = terminal?.name ?: route.terminalId.toString()
+    val container = appContainer()
+    var terminal by androidx.compose.runtime.remember {
+        androidx.compose.runtime.mutableStateOf<com.wallee.terminallinker.core.api.dto.PaymentTerminal?>(null)
+    }
+    androidx.compose.runtime.LaunchedEffect(route.terminalId) {
+        val spaceId = container.spaceRepository.activeSpace.first()?.id
+        terminal = spaceId?.let { container.terminalRepository.cached(it, route.terminalId) }
+    }
+    val name = terminal?.displayName ?: route.terminalId.toString()
     val identifier = terminal?.identifier ?: ""
     WScreen(applyStatusBarInset = false) {
         TurquoisePanel(
