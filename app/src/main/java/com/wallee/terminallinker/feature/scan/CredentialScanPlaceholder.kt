@@ -126,13 +126,13 @@ fun CredentialScanControls(
                 WFactRow(
                     label = stringResource(R.string.qr_spaces),
                     value =
-                        creds.spaceIds.takeIf { it.isNotEmpty() }?.joinToString(", ")
-                            ?: stringResource(R.string.value_none),
+                    creds.spaceIds.takeIf { it.isNotEmpty() }?.joinToString(", ")
+                        ?: stringResource(R.string.value_none),
                 )
                 WFactRow(
                     label = stringResource(R.string.qr_label),
                     value =
-                        creds.label ?: stringResource(R.string.value_none),
+                    creds.label ?: stringResource(R.string.value_none),
                     hairline = false,
                 )
                 if (spacesOnly && creds.spaceIds.isEmpty()) {

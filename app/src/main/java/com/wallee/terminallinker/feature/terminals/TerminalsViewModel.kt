@@ -9,7 +9,6 @@ import com.wallee.terminallinker.core.update.UpdateInfo
 import com.wallee.terminallinker.di.AppContainer
 import com.wallee.terminallinker.feature.spaces.SpaceRef
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

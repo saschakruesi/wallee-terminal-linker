@@ -79,7 +79,7 @@ fun SetupScreen(
                 Headline(
                     line1 = stringResource(R.string.setup_title_1),
                     line2 =
-                        state.label ?: stringResource(R.string.setup_title_2),
+                    state.label ?: stringResource(R.string.setup_title_2),
                 )
                 Spacer(Modifier.height(WalleeSpacing.S3))
                 Row(

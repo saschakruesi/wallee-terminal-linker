@@ -74,7 +74,7 @@ jobs:
           echo "Keystore, alias and passwords verified."
 
       - name: Unit tests and lint
-        run: ./gradlew ktlintCheck test --no-daemon
+        run: ./gradlew ktlintCheck test --no-daemon --no-build-cache --rerun-tasks
 
       - name: Assemble signed release APK
         env:

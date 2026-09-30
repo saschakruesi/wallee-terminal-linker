@@ -229,7 +229,11 @@ internal fun insideViewfinder(
     previewHeight: Int,
     viewfinder: Rect?,
 ): Boolean {
-    if (viewfinder == null || box == null || imageWidth == 0 || imageHeight == 0 || previewWidth == 0 ||
+    if (viewfinder == null ||
+        box == null ||
+        imageWidth == 0 ||
+        imageHeight == 0 ||
+        previewWidth == 0 ||
         previewHeight == 0
     ) {
         return true

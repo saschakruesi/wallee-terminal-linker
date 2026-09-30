@@ -10,7 +10,6 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 
 /** Parsed content of a `wallee-app-user://v1…` code (docs/02 §5). The key is kept only as long as needed. */

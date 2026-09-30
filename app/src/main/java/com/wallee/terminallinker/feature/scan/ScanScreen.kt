@@ -427,7 +427,7 @@ private fun ProgressOverlay(working: LinkFlowState.Working, mode: ScanMode) {
                     stringResource(R.string.link_step_unlink),
                     done = working.step > 1,
                     active =
-                        working.step == 1,
+                    working.step == 1,
                 )
                 StepRow(2, stringResource(R.string.link_step_link), done = false, active = working.step == 2)
             } else {

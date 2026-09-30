@@ -4,7 +4,6 @@ import com.wallee.terminallinker.core.api.IatUnit
 import com.wallee.terminallinker.core.api.WalleeApiException
 import com.wallee.terminallinker.core.api.WalleeClient
 import com.wallee.terminallinker.core.auth.Credentials
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking

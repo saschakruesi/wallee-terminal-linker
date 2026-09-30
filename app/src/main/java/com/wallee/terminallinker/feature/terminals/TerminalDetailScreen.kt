@@ -140,32 +140,32 @@ fun TerminalDetailScreen(
                     WFactRow(
                         label = stringResource(R.string.detail_label_serial),
                         value =
-                            terminal.deviceSerialNumber ?: none,
+                        terminal.deviceSerialNumber ?: none,
                     )
                     WFactRow(
                         label = stringResource(R.string.detail_label_type),
                         value =
-                            terminal.type?.localizedName(language) ?: none,
+                        terminal.type?.localizedName(language) ?: none,
                     )
                     WFactRow(
                         label = stringResource(R.string.detail_label_location),
                         value =
-                            terminal.locationName ?: none,
+                        terminal.locationName ?: none,
                     )
                     WFactRow(
                         label = stringResource(R.string.detail_label_configuration),
                         value =
-                            terminal.configurationName ?: none,
+                        terminal.configurationName ?: none,
                     )
                     WFactRow(
                         label = stringResource(R.string.detail_label_currency),
                         value =
-                            terminal.defaultCurrency ?: none,
+                        terminal.defaultCurrency ?: none,
                     )
                     WFactRow(
                         label = stringResource(R.string.detail_label_activated),
                         value =
-                            formatWalleeDate(terminal.activatedOn) ?: none,
+                        formatWalleeDate(terminal.activatedOn) ?: none,
                     )
                     terminal.activationCode?.takeIf { it.isNotBlank() }?.let {
                         WFactRow(label = stringResource(R.string.detail_label_activation_code), value = it)
