@@ -96,6 +96,10 @@ jobs:
             "dist/wallee-terminal-linker-${version}.apk" | tee dist/certs.txt
           if grep -q "CN=Android Debug" dist/certs.txt; then echo "::error::APK is debug-signed"; exit 1; fi
           rm dist/certs.txt
+          # The license list must be inside the APK (it was missing in 1.0.0 on a clean build).
+          if ! unzip -l "dist/wallee-terminal-linker-${version}.apk" | grep -q "assets/oss_licenses.json"; then
+            echo "::error::assets/oss_licenses.json is missing from the APK"; exit 1
+          fi
 
       - name: Release notes from CHANGELOG
         run: |

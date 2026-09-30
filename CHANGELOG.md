@@ -5,6 +5,12 @@ Versionierung nach [SemVer](https://semver.org/lang/de/). Die Versionsnummer ent
 
 ## [Unreleased]
 
+## [1.0.1] – 2026-09-30
+
+### Behoben
+- Die Liste der Open-Source-Komponenten (Einstellungen → Lizenzen) fehlte im veröffentlichten APK von 1.0.0,
+  weil sie bei einem sauberen Build nicht erzeugt wurde. Sie wird jetzt für jede Variante vor dem Packen erzeugt.
+
 ## [1.0.0] – 2026-09-29
 
 Erste veröffentlichte Version.
@@ -30,5 +36,6 @@ Erste veröffentlichte Version.
 - Nur wallee API v2.0 mit JWT (HS256) pro Request; der Authentication Key verlässt das Gerät nie.
 - Keine Analytics, keine Crash-Reporter; Netzwerk nur zu `app-wallee.com` und `api.github.com`.
 
-[Unreleased]: https://github.com/saschakruesi/wallee-terminal-linker/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/saschakruesi/wallee-terminal-linker/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/saschakruesi/wallee-terminal-linker/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/saschakruesi/wallee-terminal-linker/releases/tag/v1.0.0

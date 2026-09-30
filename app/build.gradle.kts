@@ -1,6 +1,5 @@
 import com.github.jk1.license.render.JsonReportRenderer
 import java.util.Base64
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
@@ -27,9 +26,6 @@ fun secret(name: String): String? = System.getenv(name)?.trimEnd('\n', '\r')?.ta
 if (releaseKeystore == null) {
     logger.warn("TL_KEYSTORE_BASE64 not set: release build will be unsigned/debug-signed (local test only).")
 }
-
-// Declared before android {} because script-level vals are initialised in order.
-val ossLicensesDir = layout.buildDirectory.dir("generated/ossLicenses")
 
 android {
     namespace = "com.wallee.terminallinker"
@@ -99,25 +95,41 @@ android {
 }
 
 // Full list of runtime dependencies with their licenses, rendered as assets/oss_licenses.json (docs/05 Phase 6.3).
+val licenseReportDir = layout.buildDirectory.dir("reports/ossLicenses")
 licenseReport {
     configurations = arrayOf("releaseRuntimeClasspath")
-    outputDir = ossLicensesDir.get().asFile.path
+    outputDir = licenseReportDir.get().asFile.path
     renderers = arrayOf(JsonReportRenderer("oss_licenses.json", false))
 }
-// Wiring the directory through the task provider gives every consumer (assets merge, lint) the dependency.
-android.sourceSets.getByName("main").assets.srcDir(tasks.named("generateLicenseReport").map { ossLicensesDir })
 
-kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
+/** Copies the report into a directory AGP can consume as a generated assets source. */
+abstract class OssLicensesAssetTask : DefaultTask() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val report: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun copy() {
+        val target = outputDir.get().asFile
+        target.deleteRecursively()
+        target.mkdirs()
+        report.get().asFile.copyTo(target.resolve("oss_licenses.json"))
     }
 }
 
-ktlint {
-    version.set(libs.versions.ktlint.get())
-    android.set(true)
-    filter {
-        exclude { it.file.path.contains("/build/") }
+val ossLicensesAsset = tasks.register<OssLicensesAssetTask>("ossLicensesAsset") {
+    dependsOn("generateLicenseReport")
+    report.set(licenseReportDir.map { it.file("oss_licenses.json") })
+}
+
+// Registering through the Variant API wires the task into asset merging and lint for every variant, also on
+// a clean build (a plain srcDir on the source set silently skipped the generation there).
+androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(ossLicensesAsset, OssLicensesAssetTask::outputDir)
     }
 }
 
