@@ -326,4 +326,5 @@
     <string name="detail_offline_cache">Offline – details from the cache, possibly outdated.</string>
     <string name="licenses_oss_title">Open-source components</string>
     <string name="licenses_unknown">License not specified</string>
+    <string name="scan_confirm_unfamiliar">Unusual format. Typical are 10 digits (PAX, "S/N") or 8 characters (FEIG, "Device-ID"). Please compare with the label.</string>
 </resources>

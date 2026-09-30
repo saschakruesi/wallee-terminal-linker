@@ -1,6 +1,7 @@
 package com.wallee.terminallinker.core.serial
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -54,5 +55,30 @@ class SerialNumberTest {
         val e = SerialNumber.parse("??").exceptionOrNull()
         assertTrue(e is SerialNumber.Error.Invalid)
         assertEquals("??", (e as SerialNumber.Error.Invalid).raw)
+    }
+
+    @Test
+    fun `familiar formats are judged by length only - 10 digits or 8 characters`() {
+        // Real labels (2026-09-30): PAX A77 S/N, FEIG cVEND box+ Device-IDs.
+        assertTrue(SerialNumber.isFamiliar("1760305860"))
+        assertTrue(SerialNumber.isFamiliar("17F91163"))
+        assertTrue(SerialNumber.isFamiliar("180FF072"))
+        // The other code on the same labels: FEIG "Serial No." and the PAX product code.
+        assertFalse(SerialNumber.isFamiliar("7882360"))
+        assertFalse(SerialNumber.isFamiliar("A77-2AW-RE6-23EU"))
+        assertFalse(SerialNumber.isFamiliar("12345678901"))
+        assertFalse(SerialNumber.isFamiliar("17F9-163"))
+        // Unfamiliar is a hint, not a rejection: parse still accepts these values.
+        assertEquals("7882360", ok("7882360"))
+        assertEquals("A77-2AW-RE6-23EU", ok("A77-2AW-RE6-23EU"))
+    }
+
+    @Test
+    fun `pick prefers the code with a familiar format when a label shows several`() {
+        assertEquals("17F91163", SerialNumber.pick(listOf("7882360", "17F91163")))
+        assertEquals("S/N:1760305860", SerialNumber.pick(listOf("A77-2AW-RE6-23EU", "S/N:1760305860")))
+        assertEquals("7882360", SerialNumber.pick(listOf("7882360")))
+        assertEquals("ABC-123456", SerialNumber.pick(listOf("ABC-123456", "??")))
+        assertEquals(null, SerialNumber.pick(emptyList()))
     }
 }

@@ -203,8 +203,18 @@ als DataMatrix. Normalisierung in `core/serial/SerialNumber.kt`:
 5. Der Nutzer sieht die erkannte Nummer **vor** dem Senden gross und bestätigt sie (Fehlscans sind billig,
    ein Link auf das falsche Gerät nicht).
 
-Welche Codeformate die eingesetzten Terminals tatsächlich tragen, wird in Phase 4 mit realen Geräten
-gesammelt und als Testfälle in `SerialNumberTest.kt` hinterlegt.
+6. **Plausibilität (bewusst «lazy», nur Länge):** Als vertraut gelten **10 Ziffern** (PAX, «S/N», z.B.
+   `1760305860`) oder **8 Zeichen** (FEIG cVEND box+, «Device-ID», z.B. `17F91163`, `180FF072`). Alles andere
+   bleibt gültig, das Bestätigungs-Sheet zeigt nur den Hinweis «Ungewohntes Format … mit dem Etikett
+   vergleichen»; «Linken» bleibt möglich. Präfixe (`176…`/`185…` bei PAX, `180FF…` bei FEIG) werden nicht
+   geprüft — dafür ist die Datenbasis zu klein.
+7. **Mehrere Codes im Sucher:** Die Etiketten tragen einen zweiten Code direkt daneben (FEIG: «Serial No.»
+   7-stellig neben der Device-ID; PAX: Produktcode `A77-2AW-RE6-23EU` neben der S/N). Liegen mehrere Codes
+   im Sucher, nimmt der Scanner den ersten mit vertrauter Länge, sonst den ersten überhaupt
+   (`SerialNumber.pick`).
+
+Reale Beispiele (Etiketten vom 30.09.2026) sind als Testfälle in `SerialNumberTest.kt` hinterlegt. Bei FEIG
+ist die **Device-ID** der Wert für wallee, nicht die «Serial No.».
 
 ## 5. Credential-QR-Code (Zugangsdaten per Scan)
 

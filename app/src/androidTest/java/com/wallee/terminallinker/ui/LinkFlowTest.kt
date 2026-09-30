@@ -40,7 +40,7 @@ class LinkFlowTest {
     private var result: List<Any?> = emptyList()
 
     /** Emits one value as soon as the screen is scanning; nothing while paused. */
-    private val fakeScanner = BarcodeScanner { _, _, paused, _, onDetected, _ ->
+    private val fakeScanner = BarcodeScanner { _, _, paused, _, _, onDetected, _ ->
         LaunchedEffect(paused) { if (!paused) onDetected("SN:2290012345") }
     }
 

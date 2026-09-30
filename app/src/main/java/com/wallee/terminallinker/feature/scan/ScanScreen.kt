@@ -64,6 +64,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wallee.terminallinker.R
+import com.wallee.terminallinker.core.serial.SerialNumber
 import com.wallee.terminallinker.core.ui.CardShape
 import com.wallee.terminallinker.core.ui.WalleeColors
 import com.wallee.terminallinker.core.ui.WalleeSize
@@ -182,6 +183,8 @@ fun ScanScreen(
                 viewfinder = { finderRect },
                 paused = scanningPaused,
                 torch = torch,
+                // Serial labels carry a second code; prefer the one with a familiar length (docs/02 §4).
+                pick = if (credentials) { values -> values.firstOrNull() } else SerialNumber::pick,
                 onDetected = { raw ->
                     if (credentials) credentialRaw = raw else linkViewModel?.onScanned(raw)
                 },
@@ -489,6 +492,14 @@ private fun ConfirmSheet(
             Text(text = stringResource(R.string.scan_confirm_title), style = WalleeTextStyles.sectionTitle)
             Spacer(Modifier.height(WalleeSpacing.S2))
             Text(text = confirm.serial, style = WalleeTextStyles.serial)
+            if (!SerialNumber.isFamiliar(confirm.serial)) {
+                Spacer(Modifier.height(WalleeSpacing.S1))
+                Text(
+                    text = stringResource(R.string.scan_confirm_unfamiliar),
+                    style = WalleeTextStyles.label,
+                    color = WalleeColors.OrangeText,
+                )
+            }
             confirm.error?.let {
                 Spacer(Modifier.height(WalleeSpacing.S1))
                 Text(text = it, style = WalleeTextStyles.label, color = WalleeColors.Orange)

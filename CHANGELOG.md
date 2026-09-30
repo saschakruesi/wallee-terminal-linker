@@ -18,6 +18,8 @@ Erste veröffentlichte Version.
   Pull-to-Refresh; Terminal-Detail mit Faktentabelle, Umbenennen, Aktualisieren, Konfiguration auslösen.
 - Kamera-Scanner (CameraX + ML Kit) für die Seriennummer auf der Geräterückseite, mit Taschenlampe,
   Tap-to-Focus und manueller Eingabe als Fallback.
+- Seriennummern-Plausibilität nach Länge: 10 Ziffern (PAX) oder 8 Zeichen (FEIG Device-ID) gelten als vertraut,
+  alles andere zeigt im Bestätigungs-Sheet einen Hinweis; bei mehreren Codes im Sucher wird der vertraute bevorzugt.
 - Gerät linken, ersetzen und trennen mit Bestätigung, Fortschritt, ehrlichem Teilfehler-Zustand und
   Ergebnis-Screen; Long-Press auf ein ungelinktes Terminal öffnet den Scanner direkt.
 - Einstellungen: Zugangsdaten, Spaces, Sprache (System / Deutsch / English), stillgelegte Terminals anzeigen,

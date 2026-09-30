@@ -58,6 +58,7 @@ fun interface BarcodeScanner {
         viewfinder: () -> Rect?,
         paused: Boolean,
         torch: Boolean,
+        pick: (List<String>) -> String?,
         onDetected: (String) -> Unit,
         modifier: Modifier,
     )
@@ -71,15 +72,17 @@ object CameraBarcodeScanner : BarcodeScanner {
         viewfinder: () -> Rect?,
         paused: Boolean,
         torch: Boolean,
+        pick: (List<String>) -> String?,
         onDetected: (String) -> Unit,
         modifier: Modifier,
-    ) = CameraScanner(formats, viewfinder, paused, torch, onDetected, modifier)
+    ) = CameraScanner(formats, viewfinder, paused, torch, onDetected, modifier, pick)
 }
 
 /**
  * CameraX preview + ML Kit analyzer, encapsulated without any API dependency (docs/05 Phase 4.1).
  * Only barcodes whose centre lies inside [viewfinder] (preview pixels) count; the first value seen twice in
  * a row is reported once via [onDetected]. While [paused] frames are dropped. [torch] toggles the flash.
+ * When several codes lie inside the viewfinder, [pick] chooses among their raw values (default: the first).
  */
 @Composable
 fun CameraScanner(
@@ -89,9 +92,11 @@ fun CameraScanner(
     torch: Boolean,
     onDetected: (String) -> Unit,
     modifier: Modifier = Modifier,
+    pick: (List<String>) -> String? = { it.firstOrNull() },
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val currentPick by rememberUpdatedState(pick)
     val currentPaused by rememberUpdatedState(paused)
     val currentOnDetected by rememberUpdatedState(onDetected)
     val currentViewfinder by rememberUpdatedState(viewfinder)
@@ -122,7 +127,9 @@ fun CameraScanner(
                 image.close()
                 return@setAnalyzer
             }
-            analyze(image, scanner, previewView, currentViewfinder(), stability) { value -> currentOnDetected(value) }
+            analyze(image, scanner, previewView, currentViewfinder(), stability, { currentPick(it) }) { value ->
+                currentOnDetected(value)
+            }
         }
         provider.unbindAll()
         camera = provider.bindToLifecycle(lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview, analysis)
@@ -179,6 +186,7 @@ private fun analyze(
     previewView: PreviewView,
     viewfinder: Rect?,
     gate: StabilityGate,
+    pick: (List<String>) -> String?,
     onDetected: (String) -> Unit,
 ) {
     val media = image.image
@@ -194,7 +202,7 @@ private fun analyze(
     val previewHeight = previewView.height
     scanner.process(input)
         .addOnSuccessListener { barcodes ->
-            val hit = barcodes.firstOrNull { barcode ->
+            val inside = barcodes.filter { barcode ->
                 val value = barcode.rawValue
                 !value.isNullOrBlank() &&
                     insideViewfinder(
@@ -205,8 +213,8 @@ private fun analyze(
                         previewHeight,
                         viewfinder,
                     )
-            } ?: return@addOnSuccessListener
-            val value = hit.rawValue!!
+            }.mapNotNull { it.rawValue }
+            val value = pick(inside) ?: return@addOnSuccessListener
             if (gate.accept(value)) onDetected(value)
         }
         .addOnCompleteListener { image.close() }

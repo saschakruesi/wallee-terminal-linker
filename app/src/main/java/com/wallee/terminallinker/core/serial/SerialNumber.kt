@@ -12,6 +12,12 @@ object SerialNumber {
     private val TOKEN_END = Regex("[;,\\s|]")
     private val URL_TOKEN = Regex("^[A-Z0-9-]{8,20}$")
 
+    /** PAX serial numbers seen so far: 10 digits (e.g. `1760305860`). */
+    private val PAX_LENGTH = Regex("^[0-9]{10}$")
+
+    /** FEIG Device-IDs seen so far: 8 characters (e.g. `17F91163`, `180FF072`). */
+    private val FEIG_LENGTH = Regex("^[A-Za-z0-9]{8}$")
+
     sealed class Error(message: String) : Exception(message) {
         class Empty : Error("empty")
 
@@ -28,6 +34,21 @@ object SerialNumber {
         }
         return validate(text.filterNot { it.isWhitespace() }, raw)
     }
+
+    /**
+     * Deliberately lazy plausibility check on length only (docs/02 §4): 10 digits (PAX S/N) or 8 characters
+     * (FEIG Device-ID). Anything else is still a valid serial — the UI only adds a "please compare" hint,
+     * because there is too little data to reject other formats.
+     */
+    fun isFamiliar(serial: String): Boolean = PAX_LENGTH.matches(serial) || FEIG_LENGTH.matches(serial)
+
+    /**
+     * Labels carry a second code next to the one wallee needs (FEIG: "Serial No." beside "Device-ID",
+     * PAX: product code beside "S/N"). Of several raw values in one camera frame, take the first whose
+     * serial has a familiar length, otherwise the first one.
+     */
+    fun pick(rawValues: List<String>): String? =
+        rawValues.firstOrNull { raw -> parse(raw).getOrNull()?.let(::isFamiliar) == true } ?: rawValues.firstOrNull()
 
     private fun extractAfterPrefix(text: String): String? {
         val match = PREFIX.find(text) ?: return null
